@@ -1,0 +1,15 @@
+Name|Full Name|Type|Unit|Description
+sample_id|Sample ID|chr|-|Unique string identifying each subject
+patient_cohort|Patient's Cohort|chr|-|Cohort 1 = previously used samples; Cohort 2 = newly added samples
+sample_origin|Sample Origin|chr|-|BPTB: Barts Pancreas Tissue Bank, London, UK; ESP: Spanish National Cancer Research Centre, Madrid, Spain; LIV: Liverpool University, UK; UCL: University College London, UK
+age|Age of subject|dbl|-|Age in years
+sex|Sex of subject|chr|-|M = male; F = female
+diagnosis|Diagnosis|dbl|-|1 = control (no cancer); 2 = benign hepatobiliary disease; 3 = PDA (pancreatic cancer)
+stage|Stage|chr|-|The stage of the disease (IA, IB, IIA, IIB, III, IV)
+benign_sample_diagnosis|Benign Sample's Diagnosis|chr|-|The diagnosis for those with a benign diagnosis
+plasma_CA19_9|Plasma CA19-9|dbl|U/ml|Blood plasma levels of CA19-9 monoclonal antibody, usually elevated when pancreatic cancer
+creatinine|Creatinine|dbl|mg/ml|Urinary biomarker of kidney function
+LYVE1|LYVE1|dbl|ng/ml|Urinary levels of Lymphatic Vessel Endothelial Hyaluronan receptor 1
+REG1B|REG1B|dbl|ng/ml|Urinary levels of Regenerating Family Member 1 Beta
+TFF1|TFF1|dbl|ng/ml|Urinary levels of Trefoil Factor 1
+REG1A|REG1A|dbl|ng/ml|Urinary levels of Regenerating Family Member 1 Alpha

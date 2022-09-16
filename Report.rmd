@@ -1,0 +1,17 @@
+---
+author: Lisa Hu
+output:
+  pdf_document:
+    includes:
+      before_body: title.sty
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    latex_engine: xelatex
+---
+
+```{r setup, include = TRUE, warning = FALSE, message = FALSE, results = "hide"}
+#' Setup chunk
+knitr::opts_chunk(cache = TRUE)
+knitr::opts_chunk(echo = TRUE)
+```
