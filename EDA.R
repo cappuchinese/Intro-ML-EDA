@@ -11,16 +11,17 @@
 ## ---------------------------
 
 ## ---- read-data ----
-dataset <- read.csv("./Data.csv")
-codebook <- read_delim("Rfiles/codebook.txt", delim = "|")
-head(dataset)
-codebook
+dataset <- read.csv("Data.csv")
+codebook <- read_delim("codebook.txt", delim = "|")
+knitr::kable(codebook[1:4], booktabs = T, caption = "Data values")
+knitr::kable(codebook[c(1,5)], booktabs = T, caption = "Description")
 
 # Change the empty strings to NA
 dataset[dataset == ""] <- NA
 
+## ---- change-data ----
 # Remove unnecessary columns
-drop <- c("stage", "benign_sample_diagnosis", "sample_id")
+drop <- c("sample_id", "benign_sample_diagnosis")
 dataset <- dataset[,!(names(dataset) %in% drop)]
 
 # Fill in the NAs with the average
@@ -28,8 +29,8 @@ dataset$plasma_CA19_9 <- replace_na(dataset$plasma_CA19_9,
                                     mean(dataset$plasma_CA19_9, na.rm=T))
 dataset$REG1A <- replace_na(dataset$REG1A, mean(dataset$REG1A, na.rm=T))
 
-# EDA
-## Group the dataset to age categories
+## ---- EDA
+## Assign age categories
 dataset <- dataset %>%
   mutate(
     ## Factor for order of age
@@ -44,8 +45,3 @@ dataset <- dataset %>%
       level = c("<30", "31-40", "41-50", "51-60", "61-70", ">70")
     )
   )
-
-ggplot(data = dataset, mapping = aes(x = age_group)) +
-  geom_bar()
-
-table( c( mean(male$diagnosis), mean(female$diagnosis) ) )

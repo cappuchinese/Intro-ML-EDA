@@ -3,11 +3,10 @@ author: Lisa Hu
 output:
   pdf_document:
     includes:
-      before_body: title.sty
-  toc: true
-  toc_depth: 2
-  number_sections: true
-  latex_engine: xelatex
+      toc: true
+      toc_depth: 2
+      number_sections: true
+      latex_engine: xelatex
 ---
 
 ```{r setup, include = TRUE, warning = FALSE, message = FALSE, results = "hide"}
@@ -21,7 +20,7 @@ knitr::read_chunk("EDA.R")
 
 ```{r libraries, warning = FALSE, message = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "tidyr", "dplyr")
+packages <- c("ggplot2", "tidyr", "dplyr", "readr", "gt")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -31,8 +30,8 @@ Dataset: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datas
 
 ### Reading the data
 Running the following command:
-```
-dataset <- read_excel("./Data.xls")
+```{r, eval = FALSE}
+dataset <- read_excel("Data.xls")
 ```
 Gave the following error:
 ```
@@ -48,4 +47,5 @@ From here, we can read the data and codebook:
 
 The information given in the codebook originates from the `Documentation.xls`. This file was given with the data file and can be found on the website.
 
-Some
+### Manipulate the data
+A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id`, `benign_sample_diagnosis` and `stage` in the dataset are not valuable for the analysis and are therefor dropped.
