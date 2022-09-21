@@ -6,8 +6,8 @@ age|Age of subject|dbl|-|Age in years
 sex|Sex of subject|chr|-|M = male; F = female
 diagnosis|Diagnosis|dbl|-|1 = control (no cancer); 2 = benign hepatobiliary disease; 3 = PDA (pancreatic cancer)
 stage|Stage|chr|-|The stage of the disease (IA, IB, IIA, IIB, III, IV)
-benign_diagnose|Benign Sample's Diagnosis|chr|-|The diagnosis for those with a benign diagnosis
-CA19_9|Blood plasma CA19-9|dbl|U/ml|Blood plasma levels of CA19-9 monoclonal antibody, usually elevated when pancreatic cancer
+benign_sample_diagnosis|Benign Sample's Diagnosis|chr|-|The diagnosis for those with a benign diagnosis
+plasma_CA19_9|Blood plasma CA19-9|dbl|U/ml|Blood plasma levels of CA19-9 monoclonal antibody, usually elevated when pancreatic cancer
 creatinine|Creatinine|dbl|mg/ml|Urinary biomarker of kidney function
 LYVE1|LYVE1|dbl|ng/ml|Urinary levels of Lymphatic Vessel Endothelial Hyaluronan receptor 1
 REG1B|REG1B|dbl|ng/ml|Urinary levels of Regenerating Family Member 1 Beta

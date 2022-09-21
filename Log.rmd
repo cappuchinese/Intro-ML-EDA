@@ -3,11 +3,16 @@ author: Lisa Hu
 output:
   pdf_document:
     includes:
-      toc: true
-      toc_depth: 2
-      number_sections: true
-      latex_engine: xelatex
+      before_body: title.sty
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    latex_engine: xelatex
 ---
+
+[//]: # (toc)
+
+\newpage
 
 ```{r setup, include = TRUE, warning = FALSE, message = FALSE, results = "hide"}
 #' Setup chunk
@@ -20,15 +25,14 @@ knitr::read_chunk("EDA.R")
 
 ```{r libraries, warning = FALSE, message = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "tidyr", "dplyr", "readr", "gt")
+packages <- c("ggplot2", "tidyr", "dplyr", "readr", "tibble")
 invisible(lapply(packages, library, character.only = T))
 ```
 
 Dataset: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
 
 # Data description
-
-### Reading the data
+## Reading the data
 Running the following command:
 ```{r, eval = FALSE}
 dataset <- read_excel("Data.xls")
@@ -47,5 +51,12 @@ From here, we can read the data and codebook:
 
 The information given in the codebook originates from the `Documentation.xls`. This file was given with the data file and can be found on the website.
 
-### Manipulate the data
-A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id`, `benign_sample_diagnosis` and `stage` in the dataset are not valuable for the analysis and are therefor dropped.
+## Manipulate and analyse the data
+A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id` and `benign_sample_diagnosis` in the dataset are not valuable for the analysis and are therefor dropped.
+
+```{r, change-data}
+```
+
+
+
+
