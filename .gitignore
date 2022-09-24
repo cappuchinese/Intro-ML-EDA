@@ -1,3 +1,5 @@
 .idea
 venv
 Log_cache
+Log_files
+Log.tex

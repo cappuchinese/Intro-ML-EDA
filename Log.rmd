@@ -4,6 +4,7 @@ output:
   pdf_document:
     includes:
       before_body: title.sty
+    keep_tex : true
     toc: true
     toc_depth: 2
     number_sections: true
@@ -14,7 +15,7 @@ output:
 
 \newpage
 
-```{r setup, include = TRUE, warning = FALSE, message = FALSE, results = "hide"}
+```{r setup, include = FALSE, warning = FALSE, message = FALSE, results = "hide"}
 #' Setup chunk
 knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
@@ -23,19 +24,26 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::read_chunk("EDA.R")
 ```
 
-```{r libraries, warning = FALSE, message = FALSE}
+```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "tidyr", "dplyr", "readr", "tibble")
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
 invisible(lapply(packages, library, character.only = T))
 ```
 
-Dataset: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
-
 # Data description
+The data can be found on kaggle.com: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
+
+The following packages were used:
+
++ ggplot2
++ tidyr
++ dplyr
++ readr
+
 ## Reading the data
 Running the following command:
 ```{r, eval = FALSE}
-dataset <- read_excel("Data.xls")
+dataset <- read_excel("data/Data.xls")
 ```
 Gave the following error:
 ```
@@ -43,20 +51,39 @@ filepath: <..>/Data.xls
 libxls error: Unable to open file
 ```
 
-Even though the filepath was correct, I tried different filenames and changing the method, but it still did not work. After scouring the internet, there was no clear solution to this. To avoid this error, open the xls-file in whichever program you have on hand for this file format. Depending on the program, `Export` (MS Excel) or `Save As` (LibreOffice Calc) the file to a CSV format (`Data.csv`).
+Even though the filepath was correct, trying different filenames and changing the method, it still did not work. After scouring the internet, there was no clear solution to this. To avoid this error, open the xls-file in a program that can edit spreadsheets and export it to a functional file format (e.g. CSV).
 
 From here, we can read the data and codebook:
-```{r, read-data}
+```{r read-data}
 ```
 
 The information given in the codebook originates from the `Documentation.xls`. This file was given with the data file and can be found on the website.
 
-## Manipulate and analyse the data
-A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id` and `benign_sample_diagnosis` in the dataset are not valuable for the analysis and are therefor dropped.
+\newpage
+## Manipulate the data
+A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped.
 
-```{r, change-data}
+```{r change-data}
 ```
 
+A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this. The missing values in the REG1A column will not be imputed since there is a lot of them and the imputation would only
 
+```{r log-trans}
+```
 
+The samples are then grouped by diagnosis for quicker access of the different samples. Table 3 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated, they can be deleted from the original dataset and the column can be dropped.
+
+[//]: # (Some entries also contain blood samples, which are also seperated.)
+
+```{r demograph}
+```
+
+\newpage
+## Analyse the data
+```{r exp-box, fig.height = 8}
+```
+
+The outliers are not localized in a specific diagnosis group, but rather spread around everywhere.
+
+### Correlation matrix
 
