@@ -26,7 +26,7 @@ knitr::read_chunk("EDA.R")
 
 ```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot", "FSA")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -41,19 +41,7 @@ The following packages were used:
 + readr
 
 ## Reading the data
-Running the following command:
-```{r, eval = FALSE}
-dataset <- read_excel("data/Data.xls")
-```
-Gave the following error:
-```
-filepath: <..>/Data.xls
-libxls error: Unable to open file
-```
-
-Even though the filepath was correct, trying different filenames and changing the method, it still did not work. After scouring the internet, there was no clear solution to this. To avoid this error, open the xls-file in a program that can edit spreadsheets and export it to a functional file format (e.g. CSV).
-
-From here, we can read the data and codebook:
+We first want to create an insight of our data:
 ```{r read-data}
 ```
 
@@ -61,12 +49,12 @@ The information given in the codebook originates from the `Documentation.xls`. T
 
 \newpage
 ## Manipulate the data
-A lot of the rows contain empty strings instead of NA, so set them to NA first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped.
+A lot of the rows contain empty strings instead of NA, which has to be fixed first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped.
 
 ```{r change-data}
 ```
 
-A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this. The missing values in the REG1A column will not be imputed since there is a lot of them and the imputation would only
+A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this. The missing values in the REG1A column will not be imputed since there is a lot of them and the imputation would only gravitate the data towards the imputation.
 
 ```{r log-trans}
 ```
@@ -86,4 +74,11 @@ The samples are then grouped by diagnosis for quicker access of the different sa
 The outliers are not localized in a specific diagnosis group, but rather spread around everywhere.
 
 ### Correlation matrix
+```{r correlation}
+```
 
+The heatmap shows that there is not much correlation between creatinine and the other variables. The other outstanding one has to be the TFF1 biomarker, being the most correlated variable.
+
+### PCA
+```{r pca
+```

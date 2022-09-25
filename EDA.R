@@ -29,8 +29,7 @@ pander(summary(dataset), split.table = 100)
 
 ## ---- log-trans ----
 log.data <- log(dataset[5:10] +1)
-colnames(log.data) <- paste("log", names(dataset[5:10]), sep = ".")
-dataset <- cbind(dataset, log.data)
+dataset[5:10] <- log.data
 
 ## ---- demograph ----
 # Different diagnosis and blood groups
@@ -39,8 +38,7 @@ benign <- subset(dataset, diagnosis == 2)
 pdac <- subset(dataset, diagnosis == 3)
 blood <- subset(dataset, plasma_CA19_9 >= 0)
 
-# Delete all the entries with blood sample and drop "plasma" columns
-dataset <- dataset[-which(dataset$plasma_CA19_9 >= 0),]
+# Drop the "plasma" columns
 dataset <- dataset[,-c(5, 11)]
 
 # Demographics
@@ -83,7 +81,7 @@ create.plots <- function(y.values, y.label, plt.tag) {
 }
 
 # Create the boxplots for the different columns
-y.values <- names(dataset[10:14])
+y.values <- names(dataset[5:9])
 y.labs <- c("log(Creatinine) (mg/ml)", "log(LYVE1) (ng/ml)", "log(REG1B) (ng/ml)",
             "log(TFF1) (ng/ml)", "log(REG1A) (ng/ml)")
 plt.tag <- c("a", "b", "c", "d", "e")
@@ -97,10 +95,14 @@ p2 <- ggarrange(plotlist = plts[3:5], ncol = 3,
 my.grid <- ggarrange(p1, p2, nrow = 2)
 print(annotate_figure(my.grid))
 
-## ---- EDA ----
-ggplot(pdac, aes(x = age, y = stage, color = stage)) + geom_point()
-pca <- prcomp(dataset[,6:9], center = TRUE, scale. = TRUE)
+## ---- correlation ----
+cor_matrix <- cor(dataset[,c(1, 3, 10:13)])
+heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA)
+
+## ---- pca ----
+pca <- prcomp(dataset[,5:8], center = TRUE, scale. = TRUE)
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = dataset$diagnosis, ellipse = F, circle = T)
+
 ## Assign age categories
 # dataset <- dataset %>%
 #   mutate(
