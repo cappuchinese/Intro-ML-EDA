@@ -96,25 +96,10 @@ my.grid <- ggarrange(p1, p2, nrow = 2)
 print(annotate_figure(my.grid))
 
 ## ---- correlation ----
-cor_matrix <- cor(dataset[,c(1, 3, 10:13)])
-heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA)
+cor_matrix <- cor(dataset[,c(1, 3, 5:8)])
+heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation matrix")
 
 ## ---- pca ----
-pca <- prcomp(dataset[,5:8], center = TRUE, scale. = TRUE)
-ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = dataset$diagnosis, ellipse = F, circle = T)
-
-## Assign age categories
-# dataset <- dataset %>%
-#   mutate(
-#     ## Factor for order of age
-#     age_group = factor(
-#       dplyr::case_when(
-#         age <= 30 ~ "<30",
-#         age > 30 & age <= 40 ~ "31-40",
-#         age > 40 & age <= 50 ~ "41-50",
-#         age > 50 & age <= 60 ~ "51-60",
-#         age > 60 & age <= 70 ~ "61-70",
-#         age > 70 ~ ">70" ),
-#       level = c("<30", "31-40", "41-50", "51-60", "61-70", ">70")
-#     )
-#   )
+pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
+ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = dataset$diagnosis,
+         ellipse = F, circle = T)

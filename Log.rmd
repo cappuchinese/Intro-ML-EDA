@@ -26,12 +26,13 @@ knitr::read_chunk("EDA.R")
 
 ```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot", "FSA")
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
 invisible(lapply(packages, library, character.only = T))
 ```
 
 # Data description
 The data can be found on kaggle.com: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
+The files are saved as `Data.csv` and `Documentation.csv` for easier access.
 
 The following packages were used:
 
@@ -45,7 +46,7 @@ We first want to create an insight of our data:
 ```{r read-data}
 ```
 
-The information given in the codebook originates from the `Documentation.xls`. This file was given with the data file and can be found on the website.
+The information given in the codebook originates from the `Documentation.csv`. This file was given with the data file and can be found on the website.
 
 \newpage
 ## Manipulate the data
@@ -59,10 +60,8 @@ A summary of the data shows very high maximum values, but rather low medians. A 
 ```{r log-trans}
 ```
 
-The samples are then grouped by diagnosis for quicker access of the different samples. Table 3 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated, they can be deleted from the original dataset and the column can be dropped.
-
-[//]: # (Some entries also contain blood samples, which are also seperated.)
-
+The samples are then grouped by diagnosis for quicker access of the different samples. Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated the column can be dropped.
+\newpage
 ```{r demograph}
 ```
 
@@ -73,12 +72,18 @@ The samples are then grouped by diagnosis for quicker access of the different sa
 
 The outliers are not localized in a specific diagnosis group, but rather spread around everywhere.
 
+\newpage
+
 ### Correlation matrix
 ```{r correlation}
 ```
 
 The heatmap shows that there is not much correlation between creatinine and the other variables. The other outstanding one has to be the TFF1 biomarker, being the most correlated variable.
 
+\newpage
+
 ### PCA
-```{r pca
+```{r pca}
 ```
+
+The PCA shows that there is a clustering on the right upper side of the PDAC diagnosis. It is also very clear that creatinine has no correlation - as shown in the previous heatmap - but TFF1 does not seem as close to LYVE1 and REG1B as predicited. In fact, the latter two have a higher correlation with each other. Every point close to the origin have values close to the mean for all variables.
