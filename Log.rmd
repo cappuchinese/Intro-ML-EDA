@@ -41,7 +41,7 @@ The following packages were used:
 + dplyr
 + readr
 
-## Reading the data
+# Reading the data
 We first want to create an insight of our data:
 ```{r read-data}
 ```
@@ -49,7 +49,7 @@ We first want to create an insight of our data:
 The information given in the codebook originates from the `Documentation.csv`. This file was given with the data file and can be found on the website.
 
 \newpage
-## Manipulate the data
+# Manipulate the data
 A lot of the rows contain empty strings instead of NA, which has to be fixed first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped.
 
 ```{r change-data}
@@ -66,7 +66,7 @@ The samples are then grouped by diagnosis for quicker access of the different sa
 ```
 
 \newpage
-## Analyse the data
+# Analyse the data
 ```{r exp-box, fig.height = 8}
 ```
 
@@ -74,7 +74,7 @@ The outliers are not localized in a specific diagnosis group, but rather spread 
 
 \newpage
 
-### Correlation matrix
+## Correlation matrix
 ```{r correlation}
 ```
 
@@ -82,7 +82,7 @@ The heatmap shows that there is not much correlation between creatinine and the 
 
 \newpage
 
-### PCA
+## PCA
 ```{r pca}
 ```
 
