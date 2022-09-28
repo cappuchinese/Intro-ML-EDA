@@ -1,0 +1,55 @@
+---
+author: Lisa Hu
+output:
+  pdf_document:
+    includes:
+      before_body: title.sty
+      in_header: header.sty
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    latex_engine: xelatex
+    keep_tex: true
+---
+
+```{r setup, include = FALSE, warning = FALSE, message = FALSE, results = "hide"}
+#' Setup chunk
+knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+BOSS_MODE <- TRUE
+# Load all the packages
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
+invisible(lapply(packages, library, character.only = T))
+
+source("../EDA.R", local = knitr::knit_global())
+```
+\newpage
+\pagenumbering{arabic}
+
+# Introduction
+
+https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-until-2019/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-to-2019
+
+\newpage
+# Methods
+
+\newpage
+# Results
+```{r}
+pander(codebook[1:4], booktabs = T, caption = "Data values", split.tables = 100)
+```
+
+```{r}
+pander(codebook[c(1,5)], booktabs = T, caption = "Description",
+       justify = c("right", "left"), split.tables = 100)
+```
+
+\newpage
+# Conclusion
+
+# Discussion
+
+\newpage
+# References
+```{r references, child = 'references.rmd'}
+```
