@@ -11,8 +11,8 @@
 ## ---------------------------
 
 ## ---- read-data ----
-dataset <- read.csv("data/Data.csv")
-codebook <- read_delim("data/codebook.txt", delim = "|")
+dataset <- read.csv("../data/Data.csv")
+codebook <- read_delim("../data/codebook.txt", delim = "|")
 pander(codebook[1:4], booktabs = T, caption = "Data values", split.tables = 100)
 pander(codebook[c(1,5)], booktabs = T, caption = "Description",
        justify = c("right", "left"), split.tables = 100)
