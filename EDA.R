@@ -101,14 +101,13 @@ heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation 
 
 ## ---- pca ----
 pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
-ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = dataset$diagnosis,
-         ellipse = FALSE, circle = TRUE)
+ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
+         ellipse = TRUE, circle = FALSE) +
+  ggtitle("PCA of complete dataset") +
+  guides(color = guide_legend(title = "Diagnosis")) +
+  theme(legend.position = "bottom")
 
 ## ---- extra-eda ----
 cor.blood <- cor(blood[,c(1,3,5:9)])
 heatmap(cor.blood, scale = "column", Colv = NA, Rowv = NA,
         main = "Correlation matrix with blood sample")
-
-pca.blood <- prcomp(blood[,c(1,3,5:9)], center = TRUE, scale. = TRUE)
-ggbiplot(pca.blood, obs.scale = 1, var.scale = 1, groups = blood$diagnosis,
-         ellipse = FALSE, circle = TRUE)
