@@ -21,7 +21,7 @@ knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::read_chunk("../EDA.R")
+knitr::read_chunk("EDA.R")
 ```
 [//]: # (toc)
 
