@@ -2,27 +2,104 @@
 author: Lisa Hu
 output:
   pdf_document:
-    includes:
-      before_body: title.sty
-      in_header: header.sty
+    fig_caption: yes
     toc: true
     toc_depth: 2
     number_sections: true
-    latex_engine: xelatex
     keep_tex: true
+    includes:
+      before_body: title.sty
+      in_header: header.sty
 ---
+```{r include = FALSE}
+# Copyright (c) 2022 Lisa Hu
+# Licensed under GPLv3. See LICENSE
+```
 
-```{r setup, include = FALSE, warning = FALSE, message = FALSE, results = "hide"}
+```{r setup, include = FALSE, warning = FALSE, message = FALSE}
 #' Setup chunk
 knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(error = FALSE)
 BOSS_MODE <- TRUE
-# Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
-invisible(lapply(packages, library, character.only = T))
 
-source("../EDA.R", local = knitr::knit_global())
+# Load all the packages
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA", "latex2exp", "xtable")
+invisible(lapply(packages, library, character.only = T))
 ```
+
+```{r var-setup, include = FALSE}
+#' All the variables to be used in this file
+# Read the data
+dataset <- read.csv("../data/Data.csv")
+codebook <- read_delim("../data/codebook.txt", delim = "|")
+
+# Change the empty strings to NA
+dataset[dataset == ""] <- NA
+
+# Remove unnecessary columns
+drop <- c("sample_id", "patient_cohort", "sample_origin", "benign_sample_diagnosis")
+dataset <- dataset[,!(names(dataset) %in% drop)]
+
+# Group the samples
+dataset <- dataset %>%
+  mutate(
+    ## Factor for order of age
+    diagnosis_group = factor(
+      dplyr::case_when(
+        diagnosis == 1 ~ "Control/Benign",
+        diagnosis == 2 ~ "Control/Benign",
+        stage == "I" ~ "I-IIA",
+        stage == "IA" ~ "I-IIA",
+        stage == "IB" ~ "I-IIA",
+        stage == "II" ~ "I-II",
+        stage == "IIA" ~ "I-IIA",
+        stage == "IIB" ~ "I-II",
+        stage == "III" ~ "III-IV",
+        stage == "IV" ~ "III-IV" ),
+      level = c("Control/Benign", "I-IIA", "I-II", "III-IV")
+    )
+  )
+
+REG1A <- dunnTest(dataset$REG1A ~ dataset$diagnosis_group)
+REG1B <- dunnTest(dataset$REG1B ~ dataset$diagnosis_group)
+dataset <- dataset[,!(names(dataset) %in% "REG1A")]
+
+# Log transform
+log.data <- log(dataset[5:9] +1)
+dataset[5:9] <- log.data
+
+# Different diagnosis and blood groups
+control <- subset(dataset, diagnosis == 1)
+benign <- subset(dataset, diagnosis == 2)
+pdac <- subset(dataset, diagnosis == 3)
+blood <- subset(dataset, plasma_CA19_9 >= 0)
+
+# Drop the "plasma" column
+dataset <- dataset[,-5]
+
+# Demographics
+demograph <- data.frame(c(sum(control$sex == "F"), sum(control$sex == "M")),
+                        c(sum(benign$sex == "F"), sum(benign$sex == "M")),
+                        c(sum(pdac$sex == "F"), sum(pdac$sex == "M")))
+
+blood.demo <- data.frame(c(sum(blood$sex == "F" & blood$diagnosis == 1),
+                           sum(blood$sex == "M" & blood$diagnosis == 1)),
+                         c(sum(blood$sex == "F" & blood$diagnosis == 2),
+                           sum(blood$sex == "M" & blood$diagnosis == 2)),
+                         c(sum(blood$sex == "F" & blood$diagnosis == 3),
+                           sum(blood$sex == "M" & blood$diagnosis == 3)))
+
+colnames(blood.demo) <- c("Control", "Benign", "PDAC")
+colnames(demograph) <- c("Control", "Benign", "PDAC")
+demograph <- rbind(demograph, blood.demo)
+rownames(demograph) <- c("Female total", "Male total", "Female blood", "Male blood")
+
+pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
+```
+
 \newpage
 \pagenumbering{arabic}
 
@@ -35,13 +112,35 @@ https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients
 
 \newpage
 # Results
+## Demographics
+The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown below.
 ```{r}
-pander(codebook[1:4], booktabs = T, caption = "Data values", split.tables = 100)
+pander(demograph, booktabs = T, caption = "Demographic of the samples",
+       justify = c("left", "center", "center", "center"))
+pander(table(pdac$stage), booktabs = T, caption = "PDAC patients per stage")
+
 ```
 
+\newpage
+## REG1B outperforms REG1A
+Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.0003). [\ref{fig:fig1}]
+
+```{r reg-vs, fig.cap = "\\label{fig:fig1}P-values of Kruskal-Wallis test, Dunn's multiple comparisons over 306 urine samples"}
+ggplot(REG1A$res[c(1,2,4),], aes(x = Comparison, y = P.adj)) +
+  geom_point(aes(color = "REG1A")) +
+  geom_point(data = REG1B$res[c(1,2,4),], aes(color = "REG1B")) +
+  geom_hline(yintercept = 0.05, color = "red", linetype = "dashed") +
+  labs(y = "P-value (adjusted)", title = "Comparison REG1A and REG1B",
+       caption = "(166 Control/Benign, and 140 PDAC [16 stage I-IIA, 54 stage I-II, 70 stage III-IV])") +
+  scale_color_manual(values = c("black", "blue"), limits = c("REG1A", "REG1B"))
+```
+
+## Correlation in urine biomarkers for different diagnosis groups
 ```{r}
-pander(codebook[c(1,5)], booktabs = T, caption = "Description",
-       justify = c("right", "left"), split.tables = 100)
+ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
+         ellipse = TRUE, circle = FALSE, size = 0.1) +
+  ggtitle("PCA of complete dataset") +
+  guides(color = guide_legend(title = "Diagnosis"))
 ```
 
 \newpage
