@@ -10,10 +10,10 @@ output:
     number_sections: true
     latex_engine: xelatex
 ---
-
-[//]: # (toc)
-
-\newpage
+``` include = FALSE
+Copyright (c) 2022 Lisa Hu
+Licensed under GPLv3. See LICENSE
+```
 
 ```{r setup, include = FALSE, warning = FALSE, message = FALSE, results = "hide"}
 #' Setup chunk
@@ -23,10 +23,12 @@ knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::read_chunk("../EDA.R")
 ```
+[//]: # (toc)
 
+\newpage
 ```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "missMethods", "ggbiplot")
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -50,12 +52,20 @@ The information given in the codebook originates from the `Documentation.csv`. T
 
 \newpage
 # Manipulate the data
-A lot of the rows contain empty strings instead of NA, which has to be fixed first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped.
+A lot of the rows contain empty strings instead of NA, which has to be fixed first. Besides that, the columns `sample_id` , `patient_cohort`, `sample_origin`, and `benign_sample_diagnosis` in the dataset significant value for the analysis and are therefor dropped. A column `diagnosis_group` was added for a comparison test.
 
 ```{r change-data}
 ```
 
-A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this. The missing values in the REG1A column will not be imputed since there is a lot of them and the imputation would only gravitate the data towards the imputation.
+\newpage
+## REG1A vs. REG1B
+```{r reg-vs}
+```
+
+Using a Kruskal-Wallis test with Dunn's multiple comparisons, REG1B shows clearly a higher performance than REG1A when the control/benign samples were compared with the stage I-IIA PDAC samples. Although very similar in performance, REG1B was used further on and therefor, column REG1A is dropped.
+
+## Log transformation
+A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this.
 
 ```{r log-trans}
 ```
