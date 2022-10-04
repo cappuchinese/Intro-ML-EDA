@@ -67,10 +67,11 @@ The samples are then grouped by diagnosis for quicker access of the different sa
 
 \newpage
 # Analyse the data
+## Boxplots
 ```{r exp-box, fig.height = 8}
 ```
 
-The outliers are not localized in a specific diagnosis group, but rather spread around everywhere.
+The outliers are not localized in a specific diagnosis group, but rather spread over the groups.
 
 \newpage
 
@@ -86,4 +87,4 @@ The heatmap shows that there is not much correlation between creatinine and the 
 ```{r pca}
 ```
 
-The PCA shows that there is a clustering on the right upper side of the PDAC diagnosis. It is also very clear that creatinine has no correlation - as shown in the previous heatmap - but TFF1 does not seem as close to LYVE1 and REG1B as predicited. In fact, the latter two have a higher correlation with each other. Every point close to the origin have values close to the mean for all variables.
+The PCA shows that there is a clustering on the right upper side of the PDAC diagnosis, while the control and benign groups can be considered the same cluster. It is also very clear that creatinine has no correlation - as shown in the previous heatmap - but TFF1 does not seem as close to LYVE1 and REG1B as predicited. In fact, the latter two have a higher correlation with each other. Every point close to the origin have values close to the mean for all variables.
