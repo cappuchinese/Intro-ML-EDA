@@ -114,15 +114,23 @@ https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients
 # Results
 ## Demographics
 The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown in Tables 1 and 2.
+\noindent
+\begin{table}[h]
+  \begin{tabular}{p{0.2\linewidth}|ll|ll|lll}
+    \multirow{2}{*}{\textbf{Sample type}} & \multicolumn{2}{l}{\textbf{Control}} & \multicolumn{2}{l}{\textbf{Benign}} & \multicolumn{3}{l}{\textbf{PDAC}}\tabularnewline
+    \cline{2-8}
+    {} & Sample & Sex & Sample & Sex & Sample & Sex & Cancer stage \tabularnewline
+    \cline{1-8}
+    \multirow{2}{*}{Urine (n=590)} & 183 & F = 115 & 208 & F = 101 & 209 & F = 83 & I-IIA = 27  II-IIB = 75 \tabularnewline
+    {} & {} & M = 68 & & M = 107 & & M = 116 & III = 76  IV = 21 \tabularnewline
+    \cline{1-8}
+    \multirow{2}{*}{Plasma (n=350)} & 92 & F = 58 & 108 & F = 57 & 150 & F = 86 & I-IIA = 20  II-IIB = 60 \tabularnewline
+    {} & {} & M = 34 & & M = 51 & & M = 64 & III = 65  IV = 5 \tabularnewline
+  \end{tabular}
+\caption{Demographics of the samples}
+\label{tab:demo}
+\end{table}
 
-```{r}
-pander(demograph, booktabs = T, caption = "Demographic of the samples",
-       justify = c("left", "center", "center", "center"))
-pander(table(pdac$stage), booktabs = T, caption = "PDAC patients per stage")
-
-```
-
-\newpage
 ## REG1B outperforms REG1A in detecting early stage PDAC
 Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.0003). [\ref{fig:fig1}] Therefor, all experiments following were performed using REG1B as part of the biomarker panel.
 
