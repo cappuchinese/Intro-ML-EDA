@@ -26,7 +26,7 @@ knitr::opts_chunk$set(error = FALSE)
 BOSS_MODE <- TRUE
 
 # Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA", "latex2exp", "xtable")
+packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA", "latex2exp")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -113,7 +113,8 @@ https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients
 \newpage
 # Results
 ## Demographics
-The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown below.
+The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown in Tables 1 and 2.
+
 ```{r}
 pander(demograph, booktabs = T, caption = "Demographic of the samples",
        justify = c("left", "center", "center", "center"))
@@ -122,21 +123,26 @@ pander(table(pdac$stage), booktabs = T, caption = "PDAC patients per stage")
 ```
 
 \newpage
-## REG1B outperforms REG1A
-Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.0003). [\ref{fig:fig1}]
+## REG1B outperforms REG1A in detecting early stage PDAC
+Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.0003). [\ref{fig:fig1}] Therefor, all experiments following were performed using REG1B as part of the biomarker panel.
 
-```{r reg-vs, fig.cap = "\\label{fig:fig1}P-values of Kruskal-Wallis test, Dunn's multiple comparisons over 306 urine samples"}
+```{r reg-vs, fig.cap = "\\label{fig:fig1}P-values of Kruskal-Wallis test, Dunn's multiple comparisons over 166 Control/Benign samples, and 140 PDAC samples (16 stage I-IIA, 54 stage I-II, 70 stage III-IV)"}
 ggplot(REG1A$res[c(1,2,4),], aes(x = Comparison, y = P.adj)) +
   geom_point(aes(color = "REG1A")) +
   geom_point(data = REG1B$res[c(1,2,4),], aes(color = "REG1B")) +
   geom_hline(yintercept = 0.05, color = "red", linetype = "dashed") +
   labs(y = "P-value (adjusted)", title = "Comparison REG1A and REG1B",
-       caption = "(166 Control/Benign, and 140 PDAC [16 stage I-IIA, 54 stage I-II, 70 stage III-IV])") +
-  scale_color_manual(values = c("black", "blue"), limits = c("REG1A", "REG1B"))
+       subtitle = "Over 306 urine samples",
+       caption = TeX("Red line: cutoff $\\alpha = 0.05$")) +
+  scale_color_manual(values = c("black", "blue"), limits = c("REG1A", "REG1B")) +
+  annotate("text", x = 4, y = 0.055, label = TeX("$\\alpha = 0.05$"), hjust = 1)
 ```
 
+\newpage
 ## Correlation in urine biomarkers for different diagnosis groups
-```{r}
+The biomarker panel was tested in a total of 590 urine samples (183 control, 208 benign, and 199 PDAC). According to the PCA, the LYVE1 and REG1B biomarkers are close related to eachother. Aside from that, the different diagnosis groups create clusters, meaning there is significant difference between the samples.
+
+```{r, fig.cap = "\\label{fig:fig2}PCA plot showing the correlations between the biomarkers."}
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE, size = 0.1) +
   ggtitle("PCA of complete dataset") +
@@ -145,6 +151,8 @@ ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
 
 \newpage
 # Conclusion
++ REG1A shows no significant difference when control samples are compared to PDAC stage I-IIA samples, though REG1B does show significance: REG1B outperforms REG1A in detecting PDAC in early stages.
++ LYVE1 and REG1B are closely related biomarkers. A good focus for the prediction following.
 
 # Discussion
 
