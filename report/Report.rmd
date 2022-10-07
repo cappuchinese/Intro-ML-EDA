@@ -1,4 +1,4 @@
----
+\usepackage{amssymb}---
 author: Lisa Hu
 output:
   pdf_document:
@@ -28,76 +28,9 @@ BOSS_MODE <- TRUE
 # Load all the packages
 packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA", "latex2exp")
 invisible(lapply(packages, library, character.only = T))
-```
 
-```{r var-setup, include = FALSE}
-#' All the variables to be used in this file
-# Read the data
-dataset <- read.csv("../data/Data.csv")
-codebook <- read_delim("../data/codebook.txt", delim = "|")
-
-# Change the empty strings to NA
-dataset[dataset == ""] <- NA
-
-# Remove unnecessary columns
-drop <- c("sample_id", "patient_cohort", "sample_origin", "benign_sample_diagnosis")
-dataset <- dataset[,!(names(dataset) %in% drop)]
-
-# Group the samples
-dataset <- dataset %>%
-  mutate(
-    ## Factor for order of age
-    diagnosis_group = factor(
-      dplyr::case_when(
-        diagnosis == 1 ~ "Control/Benign",
-        diagnosis == 2 ~ "Control/Benign",
-        stage == "I" ~ "I-IIA",
-        stage == "IA" ~ "I-IIA",
-        stage == "IB" ~ "I-IIA",
-        stage == "II" ~ "I-II",
-        stage == "IIA" ~ "I-IIA",
-        stage == "IIB" ~ "I-II",
-        stage == "III" ~ "III-IV",
-        stage == "IV" ~ "III-IV" ),
-      level = c("Control/Benign", "I-IIA", "I-II", "III-IV")
-    )
-  )
-
-REG1A <- dunnTest(dataset$REG1A ~ dataset$diagnosis_group)
-REG1B <- dunnTest(dataset$REG1B ~ dataset$diagnosis_group)
-dataset <- dataset[,!(names(dataset) %in% "REG1A")]
-
-# Log transform
-log.data <- log(dataset[5:9] +1)
-dataset[5:9] <- log.data
-
-# Different diagnosis and blood groups
-control <- subset(dataset, diagnosis == 1)
-benign <- subset(dataset, diagnosis == 2)
-pdac <- subset(dataset, diagnosis == 3)
-blood <- subset(dataset, plasma_CA19_9 >= 0)
-
-# Drop the "plasma" column
-dataset <- dataset[,-5]
-
-# Demographics
-demograph <- data.frame(c(sum(control$sex == "F"), sum(control$sex == "M")),
-                        c(sum(benign$sex == "F"), sum(benign$sex == "M")),
-                        c(sum(pdac$sex == "F"), sum(pdac$sex == "M")))
-
-blood.demo <- data.frame(c(sum(blood$sex == "F" & blood$diagnosis == 1),
-                           sum(blood$sex == "M" & blood$diagnosis == 1)),
-                         c(sum(blood$sex == "F" & blood$diagnosis == 2),
-                           sum(blood$sex == "M" & blood$diagnosis == 2)),
-                         c(sum(blood$sex == "F" & blood$diagnosis == 3),
-                           sum(blood$sex == "M" & blood$diagnosis == 3)))
-
-colnames(blood.demo) <- c("Control", "Benign", "PDAC")
-colnames(demograph) <- c("Control", "Benign", "PDAC")
-demograph <- rbind(demograph, blood.demo)
-rownames(demograph) <- c("Female total", "Male total", "Female blood", "Male blood")
-
-pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
+# Load external scripts
+source("EDA_vars.R", local = knitr::knit_global())
 ```
 
 \newpage
@@ -113,7 +46,7 @@ https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients
 \newpage
 # Results
 ## Demographics
-The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown in Tables 1 and 2.
+The patients were divided by diagnosis and the PDAC patients are further seperated by the stage of the disease. The number of samples per diagnosis and stage are shown in Table \ref{tab:demo}.
 \noindent
 \begin{table}[h]
   \begin{tabular}{p{0.2\linewidth}|ll|ll|lll}
@@ -150,7 +83,7 @@ ggplot(REG1A$res[c(1,2,4),], aes(x = Comparison, y = P.adj)) +
 ## Correlation in urine biomarkers for different diagnosis groups
 The biomarker panel was tested in a total of 590 urine samples (183 control, 208 benign, and 199 PDAC). According to the PCA, the LYVE1 and REG1B biomarkers are close related to eachother. Aside from that, the different diagnosis groups create clusters, meaning there is significant difference between the samples.
 
-```{r, fig.cap = "\\label{fig:fig2}PCA plot showing the correlations between the biomarkers."}
+```{r, fig.cap = "\\label{fig:fig2}PCA plot showing the correlations between the biomarkers. Data is log transformed."}
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE, size = 0.1) +
   ggtitle("PCA of complete dataset") +
