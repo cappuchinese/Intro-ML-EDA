@@ -51,7 +51,7 @@ dataset[4:8] <- log.data
 dataset$sex <- factor(dataset$sex, levels = c("F", "M"))
 
 # Export dataset
-write.csv(dataset, "cleaned_data.csv", row.names = FALSE, quote = FALSE)
+write.csv(dataset, "cleaned_data.csv", row.names = FALSE, quote = FALSE, na="")
 
 ## CODE TO CREATE TRAINING AND TEST SETS
 # # Create set column for training and test sets
