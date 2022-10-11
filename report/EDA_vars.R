@@ -1,3 +1,18 @@
+## ---------------------------
+##
+## Name: EDA.R
+##
+## Author: Lisa Hu
+##
+## Purpose: Script everything surrounding the EDA
+##
+## Email: l.j.b.hu@st.hanze.nl
+##
+## Copyright (c) 2022 Lisa Hu
+## Licensed under GPLv3. See LICENSE
+##
+## ---------------------------
+
 #' All the variables to be used in this file
 # Read the data
 dataset <- read.csv("../data/Data.csv")
