@@ -1,4 +1,4 @@
-\usepackage{amssymb}---
+---
 author: Lisa Hu
 output:
   pdf_document:
@@ -65,18 +65,14 @@ The patients were divided by diagnosis and the PDAC patients are further seperat
 \end{table}
 
 ## REG1B outperforms REG1A in detecting early stage PDAC
-Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.0003). [\ref{fig:fig1}] Therefor, all experiments following were performed using REG1B as part of the biomarker panel.
+Though the performance of REG1A and REG1B are very similar, REG1B outperformed REG1A when control and benign samples were compared to stage I-IIA PDAC samples (Kruskal-Wallis test; p < 0.001 & p < 0.0002). [Table \ref{tab:comp}] Therefor, all experiments following were performed using REG1B as part of the biomarker panel.
 
-```{r reg-vs, fig.cap = "\\label{fig:fig1}P-values of Kruskal-Wallis test, Dunn's multiple comparisons over 166 Control/Benign samples, and 140 PDAC samples (16 stage I-IIA, 54 stage I-II, 70 stage III-IV)"}
-ggplot(REG1A$res[c(1,2,4),], aes(x = Comparison, y = P.adj)) +
-  geom_point(aes(color = "REG1A")) +
-  geom_point(data = REG1B$res[c(1,2,4),], aes(color = "REG1B")) +
-  geom_hline(yintercept = 0.05, color = "red", linetype = "dashed") +
-  labs(y = "P-value (adjusted)", title = "Comparison REG1A and REG1B",
-       subtitle = "Over 306 urine samples",
-       caption = TeX("Red line: cutoff $\\alpha = 0.05$")) +
-  scale_color_manual(values = c("black", "blue"), limits = c("REG1A", "REG1B")) +
-  annotate("text", x = 4, y = 0.055, label = TeX("$\\alpha = 0.05$"), hjust = 1)
+```{r reg-vs}
+pander(comparison[,c(2,4,6)], split.tables = 100, booktabs = T,
+       caption = "\\label{tab:comp}Adjusted p-values of Kruskal-Wallis test,
+       Dunn's multiple comparisons; ns - not significant.
+       The header shows the groups that were compared.")
+pander(comparison[,c(1,3,5)], split.tables = 100, booktabs = T)
 ```
 
 \newpage
