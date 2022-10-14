@@ -31,17 +31,17 @@ dataset <- dataset %>%
     ## Factor for order of age
     diagnosis_group = factor(
       dplyr::case_when(
-        diagnosis == 1 ~ "Control",
-        diagnosis == 2 ~ "Benign",
-        stage == "I" ~ "I-II",
-        stage == "IA" ~ "I-II",
-        stage == "IB" ~ "I-II",
+        diagnosis == 1 ~ "Control/Benign",
+        diagnosis == 2 ~ "Control/Benign",
+        stage == "I" ~ "I-IIA",
+        stage == "IA" ~ "I-IIA",
+        stage == "IB" ~ "I-IIA",
         stage == "II" ~ "I-II",
-        stage == "IIA" ~ "I-II",
+        stage == "IIA" ~ "I-IIA",
         stage == "IIB" ~ "I-II",
         stage == "III" ~ "III-IV",
         stage == "IV" ~ "III-IV" ),
-      level = c("Control", "Benign", "I-II", "III-IV")
+      level = c("Control/Benign", "I-IIA", "I-II", "III-IV")
     )
   )
 
