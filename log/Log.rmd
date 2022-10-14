@@ -10,9 +10,9 @@ output:
     number_sections: true
     latex_engine: xelatex
 ---
-``` include = FALSE
-Copyright (c) 2022 Lisa Hu
-Licensed under GPLv3. See LICENSE
+```{r include = FALSE}
+# Copyright (c) 2022 Lisa Hu
+# Licensed under GPLv3. See LICENSE
 ```
 
 ```{r setup, include = FALSE, warning = FALSE, message = FALSE, results = "hide"}
