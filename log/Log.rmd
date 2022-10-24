@@ -98,3 +98,35 @@ The heatmap shows that there is not much correlation between creatinine and the 
 ```
 
 While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups. As earlier concluded from the heatmap, the creatinine biomarker does not show much relativeness with the other biomarkers. LYVE1 is nicely in between the TFF1 and REG1B biomarkers. Every point close tho the origin have values close to the mean for all variables.
+
+\newpage
+# Machine Learning
+## Preparing the data
+For the exploration of the model, the data is cleaned so all unused columns are dropped and the classification labels changed a bit, leaving the data looking like this:
+```{r}
+cleaned <- read.csv("../data/cleaned_data.csv")
+pander(head(cleaned))
+pander(unique(cleaned$diagnosis_group))
+```
+
+## Metrics
+For predictive models
+
+## Weka: Model Exploration
+
+\begin{table}[h!]
+    \centering
+    \caption{Algorithm comparison}
+    \label{tab:weka1}
+    \begin{tabular}{@{}r|llllllll@{}}
+        \hline
+        \textbf{Algorithm} & ZeroR & OneR & NaiveBayes & SimpleLogistics & SMO & IBk & J48 & RandomForest\\
+        \hline
+        \hline
+        \textbf{Speed} & 0.10ms & 0.70ms & 0.50ms & 40.60ms & 9.80ms & 1.20ms & 5.20ms & 174.70ms\\
+        \textbf{Accuracy} & 35.25\% & 41.19\% & 50.07\% & 54.17\% & 51.17\% & 39.25\% & 47.63\% & 53.22\%\\
+        \textbf{ROC area} & 0.50 & 0.63 & 0.81 & 0.82 & 0.78 & 0.66 & 0.79 & 0.84\\
+        \textbf{TP rate} & 0.00 & 0.48 & 0.57 & 0.51 & 0.39 & 0.44 & 0.60 & 0.65\\
+        \hline
+    \end{tabular}
+\end{table}
