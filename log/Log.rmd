@@ -62,7 +62,7 @@ A lot of the rows contain empty strings instead of NA, which has to be fixed fir
 ```{r reg-vs}
 ```
 
-Using a Kruskal-Wallis test with Dunn's multiple comparisons, REG1B shows clearly a higher performance than REG1A when the control/benign samples were compared with the stage I-IIA PDAC samples. Although very similar in performance, REG1B was used further on and therefor, column REG1A is dropped.
+Although performance between the two is similar, a Kruskal-Wallis test with Dunn's multiple comparisons shows that REG1B outperforms REG1A when the control and benign samples are compared to the I-IIA PDAC samples. Therefor, REG1B was used further on in the experiments and REG1A is dropped.
 
 ## Log transformation
 A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this.
@@ -70,7 +70,7 @@ A summary of the data shows very high maximum values, but rather low medians. A 
 ```{r log-trans}
 ```
 
-The samples are then grouped by diagnosis for quicker access of the different samples. Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated the column can be dropped.
+The samples are then grouped by diagnosis for easier access of the different samples. Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated the column can be dropped.
 \newpage
 ```{r demograph}
 ```
@@ -89,7 +89,7 @@ The outliers are not localized in a specific diagnosis group, but rather spread 
 ```{r correlation}
 ```
 
-The heatmap shows that there is not much correlation between creatinine and the other variables. The other outstanding one has to be the TFF1 biomarker, being the most correlated variable.
+The heatmap shows that there is not much correlation between creatinine and the other variables. The other outstanding one has to be the TFF1 biomarker, being the most correlated variable to others.
 
 \newpage
 
@@ -97,4 +97,4 @@ The heatmap shows that there is not much correlation between creatinine and the 
 ```{r pca}
 ```
 
-The PCA shows that there is a clustering on the right upper side of the PDAC diagnosis, while the control and benign groups can be considered the same cluster. It is also very clear that creatinine has no correlation - as shown in the previous heatmap - but TFF1 does not seem as close to LYVE1 and REG1B as predicited. In fact, the latter two have a higher correlation with each other. Every point close to the origin have values close to the mean for all variables.
+While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups. As earlier concluded from the heatmap, the creatinine biomarker does not show much relativeness with the other biomarkers. LYVE1 is nicely in between the TFF1 and REG1B biomarkers. Every point close tho the origin have values close to the mean for all variables.
