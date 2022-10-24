@@ -117,17 +117,17 @@ create.plots <- function(y.values, y.label, plt.tag) {
 }
 
 # Create the boxplots for the different columns
-y.values <- names(dataset[5:9])
+y.values <- names(dataset[5:8])
 y.labs <- c("log(Creatinine) (mg/ml)", "log(LYVE1) (ng/ml)", "log(REG1B) (ng/ml)",
-            "log(TFF1) (ng/ml)", "log(REG1A) (ng/ml)")
-plt.tag <- c("a", "b", "c", "d", "e")
+            "log(TFF1) (ng/ml)")
+plt.tag <- c("a", "b", "c", "d")
 plts <- mapply(create.plots, y.values, y.labs, plt.tag)
 
 # Grid and print the plots
 p1 <- ggarrange(plotlist = plts[1:2], ncol = 2,
-                common.legend = TRUE, legend = "top")
-p2 <- ggarrange(plotlist = plts[3:5], ncol = 3,
-                common.legend = TRUE, legend = "top")
+                common.legend = TRUE, legend = "bottom")
+p2 <- ggarrange(plotlist = plts[3:4], ncol = 2,
+                common.legend = TRUE, legend = "none")
 my.grid <- ggarrange(p1, p2, nrow = 2)
 print(annotate_figure(my.grid))
 
