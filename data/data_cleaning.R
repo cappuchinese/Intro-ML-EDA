@@ -13,6 +13,8 @@
 ##
 ## ---------------------------
 
+# Set working directory to this folder
+setwd("data")
 # Read dataset
 dataset <- read.csv("Data.csv")
 # Change the empty strings to NA
@@ -40,20 +42,26 @@ dataset <- dataset %>%
 
 # Drop unnecessary columns
 drop <- c("sample_id", "patient_cohort", "sample_origin", "benign_sample_diagnosis",
-          "diagnosis", "REG1A")
+          "REG1A", "age", "sex", "stage")
 dataset <- dataset[,!(names(dataset) %in% drop)]
 
-# Log transform
-log.data <- log(dataset[4:8] +1)
-dataset[4:8] <- log.data
+# Log transform and meann centering
+log.data <- log(dataset[2:6] +1)
+dataset[2:6] <- log.data
 
-# Factorize sex
-dataset$sex <- factor(dataset$sex, levels = c("F", "M"))
+control <- subset(dataset, dataset$diagnosis == 1 | dataset$diagnosis == 3)
+benign <- subset(dataset, dataset$diagnosis == 2 | dataset$diagnosis == 3)
+
+control <- control[-1]
+benign <- benign[-1]
+dataset <- dataset[-1]
 
 # Export dataset
-write.csv(dataset, "cleaned_data.csv", row.names = FALSE, quote = FALSE, na="")
+write.csv(dataset, "cleaned_data.csv", row.names = F, quote = F, na="")
+write.csv(control, "control_data.csv", row.names = F, quote = F, na="")
+write.csv(benign, "benign_data.csv", row.names = F, quote = F, na="")
 
-## CODE TO CREATE TRAINING AND TEST SETS
+# CODE TO CREATE TRAINING AND TEST SETS
 # # Create set column for training and test sets
 # dataset$set <- factor( rep( c("Training", "Test"), times = nrow(dataset)/2 ),
 #                       levels = c("Training", "Test"))
@@ -61,5 +69,10 @@ write.csv(dataset, "cleaned_data.csv", row.names = FALSE, quote = FALSE, na="")
 # training <-  subset(dataset, dataset$set == "Training")
 # test.data <- subset(dataset, dataset$set == "Test")
 # # Drop the set column is the subsets
-# training <- training[-10]
-# test.data <- test.data[-10]
+# training <- training[-7]
+# test.data <- test.data[-7]
+# write.csv(training, "training_set.csv", row.names = F, quote = F, na = "")
+# write.csv(test.data, "test_set.csv", row.names = F, quote = F, na = "")
+
+# Set working directory back to root
+setwd("..")
