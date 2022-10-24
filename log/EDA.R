@@ -132,18 +132,13 @@ my.grid <- ggarrange(p1, p2, nrow = 2)
 print(annotate_figure(my.grid))
 
 ## ---- correlation ----
-cor_matrix <- cor(dataset[,c(1, 3, 5:8)])
+cor_matrix <- cor(dataset[,5:8])
 heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation matrix")
 
 ## ---- pca ----
-pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
+pca <- prcomp(dataset[,5:8], center = TRUE, scale. = TRUE)
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE) +
   ggtitle("PCA of complete dataset") +
   guides(color = guide_legend(title = "Diagnosis")) +
   theme(legend.position = "bottom")
-
-## ---- extra-eda ----
-cor.blood <- cor(blood[,c(1,3,5:9)])
-heatmap(cor.blood, scale = "column", Colv = NA, Rowv = NA,
-        main = "Correlation matrix with blood sample")
