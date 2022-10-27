@@ -39,30 +39,35 @@ dataset <- dataset %>%
       level = c("Control", "Benign", "I-II", "III-IV")
     )
   )
+dataset$sex <- factor(dataset$sex)
 
 # Drop unnecessary columns
 drop <- c("sample_id", "patient_cohort", "sample_origin", "benign_sample_diagnosis",
-          "REG1A", "age", "sex", "stage")
+          "REG1A", "stage")
 dataset <- dataset[,!(names(dataset) %in% drop)]
 
 # Log transform and meann centering
-log.data <- log(dataset[2:6] +1)
-dataset[2:6] <- log.data
+log.data <- log(dataset[4:8] +1)
+dataset[4:8] <- log.data
 
 # Random split for training and test sets (50/50)
 set.seed(391)
 train.rows <- sample(seq_len(nrow(dataset)), size = floor(0.5*nrow(dataset)))
 
-training <- dataset[train.rows,2:7]
-test <- dataset[-train.rows,2:7]
+training <- dataset[train.rows,]
+test <- dataset[-train.rows,]
 
 # Create Control+PDAC training and test data
-control.train <- subset(training[2:7], training$diagnosis == 1 | training$diagnosis == 3)
-control.test <- subset(test[2:7], test$diagnosis == 1 | test$diagnosis == 3)
+control.train <- subset(training[,c(1,2,4:9)], training$diagnosis == 1 | training$diagnosis == 3)
+control.test <- subset(test[,c(1,2,4:9)], test$diagnosis == 1 | test$diagnosis == 3)
 
 # Create Benign+PDAC training and test data
-benign.train <- subset(training[2:7], training$diagnosis == 2 | training$diagnosis == 3)
-benign.test <- subset(test[2:7], test$diagnosis == 2 | test$diagnosis == 3)
+benign.train <- subset(training[,c(1,2,4:9)], training$diagnosis == 2 | training$diagnosis == 3)
+benign.test <- subset(test[,c(1,2,4:9)], test$diagnosis == 2 | test$diagnosis == 3)
+
+# Remove diagnosis column
+training <- training[-3,]
+test <- test[-3,]
 
 # Export dataset
 write.csv(training, "training.csv", row.names = F, quote = F, na="")
