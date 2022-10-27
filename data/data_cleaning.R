@@ -49,30 +49,33 @@ dataset <- dataset[,!(names(dataset) %in% drop)]
 log.data <- log(dataset[2:6] +1)
 dataset[2:6] <- log.data
 
-control <- subset(dataset, dataset$diagnosis == 1 | dataset$diagnosis == 3)
-benign <- subset(dataset, dataset$diagnosis == 2 | dataset$diagnosis == 3)
+# Create set column for training and test sets (50/50)
+dataset$set <- factor( rep( c("Training", "Test"), times = nrow(dataset)/2 ),
+                       levels = c("Training", "Test"))
 
-control <- control[-1]
-benign <- benign[-1]
-dataset <- dataset[-1]
+# Subset training and test
+training <- subset(dataset[2:7], dataset$set == "Training")
+test <- subset(dataset[2:7], dataset$set == "Test")
+
+# Create Control+PDAC training and test data
+control.train <- subset(dataset[2:8], dataset$diagnosis == 1 | dataset$diagnosis == 3)
+control.test <- subset(control.train[1:6], control.train$set == "Test")
+control.train <- control.train[control.train$set == "Training",]
+control.train <- control.train[-7]
+
+# Create Benign+PDAC training and test data
+benign.train <- subset(dataset[2:8], dataset$diagnosis == 2 | dataset$diagnosis == 3)
+benign.test <- subset(benign.train[1:6], benign.train$set == "Test")
+benign.train <- benign.train[benign.train$set == "Training",]
+benign.train <- benign.train[-7]
 
 # Export dataset
-write.csv(dataset, "cleaned_data.csv", row.names = F, quote = F, na="")
-write.csv(control, "control_data.csv", row.names = F, quote = F, na="")
-write.csv(benign, "benign_data.csv", row.names = F, quote = F, na="")
-
-# CODE TO CREATE TRAINING AND TEST SETS
-# # Create set column for training and test sets
-# dataset$set <- factor( rep( c("Training", "Test"), times = nrow(dataset)/2 ),
-#                       levels = c("Training", "Test"))
-# # Subset accordingly
-# training <-  subset(dataset, dataset$set == "Training")
-# test.data <- subset(dataset, dataset$set == "Test")
-# # Drop the set column is the subsets
-# training <- training[-7]
-# test.data <- test.data[-7]
-# write.csv(training, "training_set.csv", row.names = F, quote = F, na = "")
-# write.csv(test.data, "test_set.csv", row.names = F, quote = F, na = "")
+write.csv(training, "training.csv", row.names = F, quote = F, na="")
+write.csv(test, "test.csv", row.names = F, quote = F, na="")
+write.csv(control.train, "control_train.csv", row.names = F, quote = F, na="")
+write.csv(control.test, "control_test.csv", row.names = F, quote = F, na="")
+write.csv(benign.train, "benign_train.csv", row.names = F, quote = F, na="")
+write.csv(benign.test, "benign_test.csv", row.names = F, quote = F, na="")
 
 # Set working directory back to root
 setwd("..")
