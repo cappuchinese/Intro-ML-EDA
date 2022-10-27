@@ -66,8 +66,8 @@ benign.train <- subset(training[,c(1,2,4:9)], training$diagnosis == 2 | training
 benign.test <- subset(test[,c(1,2,4:9)], test$diagnosis == 2 | test$diagnosis == 3)
 
 # Remove diagnosis column
-training <- training[-3,]
-test <- test[-3,]
+training <- training[,-3]
+test <- test[,-3]
 
 # Export dataset
 write.csv(training, "training.csv", row.names = F, quote = F, na="")
