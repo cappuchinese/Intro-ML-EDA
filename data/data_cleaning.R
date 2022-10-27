@@ -49,25 +49,20 @@ dataset <- dataset[,!(names(dataset) %in% drop)]
 log.data <- log(dataset[2:6] +1)
 dataset[2:6] <- log.data
 
-# Create set column for training and test sets (50/50)
-dataset$set <- factor( rep( c("Training", "Test"), times = nrow(dataset)/2 ),
-                       levels = c("Training", "Test"))
+# Random split for training and test sets (50/50)
+set.seed(391)
+train.rows <- sample(seq_len(nrow(dataset)), size = floor(0.5*nrow(dataset)))
 
-# Subset training and test
-training <- subset(dataset[2:7], dataset$set == "Training")
-test <- subset(dataset[2:7], dataset$set == "Test")
+training <- dataset[train.rows,]
+test <- dataset[-train.rows,]
 
 # Create Control+PDAC training and test data
-control.train <- subset(dataset[2:8], dataset$diagnosis == 1 | dataset$diagnosis == 3)
-control.test <- subset(control.train[1:6], control.train$set == "Test")
-control.train <- control.train[control.train$set == "Training",]
-control.train <- control.train[-7]
+control.train <- subset(training[2:7], training$diagnosis == 1 | training$diagnosis == 3)
+control.test <- subset(test[2:7], test$diagnosis == 1 | test$diagnosis == 3)
 
 # Create Benign+PDAC training and test data
-benign.train <- subset(dataset[2:8], dataset$diagnosis == 2 | dataset$diagnosis == 3)
-benign.test <- subset(benign.train[1:6], benign.train$set == "Test")
-benign.train <- benign.train[benign.train$set == "Training",]
-benign.train <- benign.train[-7]
+benign.train <- subset(training[2:7], training$diagnosis == 2 | training$diagnosis == 3)
+benign.test <- subset(test[2:7], test$diagnosis == 2 | test$diagnosis == 3)
 
 # Export dataset
 write.csv(training, "training.csv", row.names = F, quote = F, na="")
