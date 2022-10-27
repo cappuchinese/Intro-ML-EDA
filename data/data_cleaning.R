@@ -53,8 +53,8 @@ dataset[2:6] <- log.data
 set.seed(391)
 train.rows <- sample(seq_len(nrow(dataset)), size = floor(0.5*nrow(dataset)))
 
-training <- dataset[train.rows,]
-test <- dataset[-train.rows,]
+training <- dataset[train.rows,2:7]
+test <- dataset[-train.rows,2:7]
 
 # Create Control+PDAC training and test data
 control.train <- subset(training[2:7], training$diagnosis == 1 | training$diagnosis == 3)
