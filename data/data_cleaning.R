@@ -62,6 +62,7 @@ training <- training[,-3]
 test <- test[,-3]
 
 # Export dataset
+write.csv(dataset[,c(1,2,4:9)], "cleaned_data.csv", row.names = F, quote = F, na="")
 write.csv(training, "training.csv", row.names = F, quote = F, na="")
 write.csv(test, "test.csv", row.names = F, quote = F, na="")
 
