@@ -57,14 +57,6 @@ train.rows <- sort(sample(seq_len(nrow(dataset)), size = floor(0.5*nrow(dataset)
 training <- dataset[train.rows,]
 test <- dataset[-train.rows,]
 
-# Create Control+PDAC training and test data
-control.train <- subset(training[,c(1,2,4:9)], training$diagnosis == 1 | training$diagnosis == 3)
-control.test <- subset(test[,c(1,2,4:9)], test$diagnosis == 1 | test$diagnosis == 3)
-
-# Create Benign+PDAC training and test data
-benign.train <- subset(training[,c(1,2,4:9)], training$diagnosis == 2 | training$diagnosis == 3)
-benign.test <- subset(test[,c(1,2,4:9)], test$diagnosis == 2 | test$diagnosis == 3)
-
 # Remove diagnosis column
 training <- training[,-3]
 test <- test[,-3]
@@ -72,10 +64,6 @@ test <- test[,-3]
 # Export dataset
 write.csv(training, "training.csv", row.names = F, quote = F, na="")
 write.csv(test, "test.csv", row.names = F, quote = F, na="")
-write.csv(control.train, "control_train.csv", row.names = F, quote = F, na="")
-write.csv(control.test, "control_test.csv", row.names = F, quote = F, na="")
-write.csv(benign.train, "benign_train.csv", row.names = F, quote = F, na="")
-write.csv(benign.test, "benign_test.csv", row.names = F, quote = F, na="")
 
 # Set working directory back to root
 setwd("..")
