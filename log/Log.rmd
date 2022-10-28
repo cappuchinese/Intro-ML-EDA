@@ -28,7 +28,7 @@ knitr::read_chunk("EDA.R")
 \newpage
 ```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA")
+packages <- c("dplyr", "ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -38,10 +38,13 @@ The files are saved as `Data.csv` and `Documentation.csv` for easier access.
 
 The following packages were used:
 
-+ ggplot2
-+ tidyr
 + dplyr
 + readr
++ pander
++ FSA
++ ggplot2
++ ggpubr
++ ggbiplot
 
 # Reading the data
 We first want to create an insight of our data:
