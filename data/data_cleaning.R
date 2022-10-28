@@ -52,7 +52,7 @@ dataset[4:8] <- log.data
 
 # Random split for training and test sets (50/50)
 set.seed(391)
-train.rows <- sort(sample(seq_len(nrow(dataset)), size = floor(0.5*nrow(dataset))))
+train.rows <- sort(sample(seq_len(nrow(dataset)), size = floor(0.7*nrow(dataset))))
 
 training <- dataset[train.rows,]
 test <- dataset[-train.rows,]
