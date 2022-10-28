@@ -46,6 +46,7 @@ The following packages were used:
 + ggpubr
 + ggbiplot
 
+\newpage
 # Reading the data
 We first want to create an insight of our data:
 ```{r read-data}
@@ -65,15 +66,19 @@ A lot of the rows contain empty strings instead of NA, which has to be fixed fir
 ```{r reg-vs}
 ```
 
-Although performance between the two is similar, a Kruskal-Wallis test with Dunn's multiple comparisons shows that REG1B outperforms REG1A when the control and benign samples are compared to the I-IIA PDAC samples. Therefor, REG1B was used further on in the experiments and REG1A is dropped.
+Although performance between the two is similar, a Kruskal-Wallis test with Dunn's multiple comparisons shows that REG1B outperforms REG1A when the control and benign samples are compared to the I-IIA PDAC samples.
+Therefor, REG1B was used further on in the experiments and REG1A is dropped.
 
 ## Log transformation
-A summary of the data shows very high maximum values, but rather low medians. A log-transformation is applied to correct this.
+A summary of the data shows very high maximum values, but rather low medians.
+A log-transformation is applied to correct this.
 
 ```{r log-trans}
 ```
 
-The samples are then grouped by diagnosis for easier access of the different samples. Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples. After the blood samples are seperated the column can be dropped.
+The samples are then grouped by diagnosis for easier access of the different samples.
+Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples.
+After the blood samples are seperated the column can be dropped.
 \newpage
 ```{r demograph}
 ```
@@ -92,7 +97,8 @@ The outliers are not localized in a specific diagnosis group, but rather spread 
 ```{r correlation}
 ```
 
-The heatmap shows that there is not much correlation between creatinine and the other variables. The other outstanding one has to be the TFF1 biomarker, being the most correlated variable to others.
+The heatmap shows that there is not much correlation between creatinine and the other variables.
+The other outstanding one has to be the TFF1 biomarker, being the most correlated variable to others.
 
 \newpage
 
@@ -100,12 +106,15 @@ The heatmap shows that there is not much correlation between creatinine and the 
 ```{r pca}
 ```
 
-While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups. As earlier concluded from the heatmap, the creatinine biomarker does not show much relativeness with the other biomarkers. LYVE1 is nicely in between the TFF1 and REG1B biomarkers. Every point close tho the origin have values close to the mean for all variables.
+While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups.
+As earlier concluded from the heatmap, the creatinine biomarker does not show much relativeness with the other biomarkers.
+LYVE1 is nicely in between the TFF1 and REG1B biomarkers.
+Every point close tho the origin have values close to the mean for all variables.
 
 \newpage
 # Machine Learning
 ## Model exploration
-For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV).
+For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV). For the code used to prepare the data, see
 ```{r}
 cleaned <- read.csv("../data/cleaned_data.csv")
 pander(head(cleaned))
@@ -136,7 +145,9 @@ To set a baseline, the data is run through different types of algorithms in Weka
 \end{table}
 ```
 
-These results show a relative low sensitivity and high FNR. Some algorithms have a low ROC value, low sensitivity and low accuracy: OneR, IBk, and J48 are not further analysed. OneR will be kept to set a baseline. To apply the CostSensitiveClassifier, the confusion matrix of every algorithm should be known:
+These results show a relative low sensitivity and high FNR. Some algorithms have a low ROC value, low sensitivity and low accuracy: OneR, IBk, and J48 are not further analysed.
+OneR will be kept to set a baseline. The SMO algorithm has a low sensitivity and the highest FNR, therefor also dropped.
+
 
 ```{=latex}
 \begin{table}[h!]
@@ -194,9 +205,13 @@ These results show a relative low sensitivity and high FNR. Some algorithms have
 \end{table}
 ```
 
-Now the matrices for CostSensitiveClassifier can be build.
 
 ## Metrics
 For predictive models
 
 ## Weka: Model Exploration
+
+\newpage
+# Appendix A
+```{r file='../data/data_cleaning.R', eval = FALSE, attr.source='.numberLines'}
+```
