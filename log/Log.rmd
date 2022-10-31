@@ -174,10 +174,12 @@ To set a baseline, the data is run through different types of algorithms in Weka
 ```{r weka-base}
 ```
 
-These results show a relative low sensitivity and high FNR. Some algorithms have a low ROC value, low sensitivity and low accuracy: OneR, IBk, and J48 are not further analysed.
-OneR will be kept to set a baseline. The SMO algorithm has a low sensitivity and the highest FNR, therefor also dropped.
+With the `data/base.exp` file, all the options used for this run can be imported into Weka. Add the desired data and fill in the `Results Destination` for the run.
 
-###
+These results show a relative low accuracy and sensitivity. Some algorithms also have a low ROC value, putting the cutoff at 0.8: OneR, SMO, IBk and J48 will not be used. As for the remaining three: NaiveBayes has by far the lowest accuracy of them and is therefor also dropped. Leaving the options SimpleLogistic and RandomForest.
+
+### Optimize algorithm
+To create the optimal model, the data is first split into training and test data in a 70/30 ratio (see Section \ref{appendix-a}). To make sure the algorithm learns to predict less
 
 \newpage
 # Appendix A
