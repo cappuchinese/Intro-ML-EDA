@@ -30,7 +30,8 @@ packages <- c("dplyr", "ggplot2", "readr", "pander", "ggbiplot", "FSA")
 invisible(lapply(packages, library, character.only = T))
 
 # Load external scripts
-source("EDA_vars.R", local = knitr::knit_global())
+source("../src/fucntions.R", local = knitr::knit_global())
+source("../src/EDA_vars.R", local = knitr::knit_global())
 ```
 
 \newpage

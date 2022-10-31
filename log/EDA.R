@@ -100,20 +100,6 @@ pander(demograph.blood, booktabs = T, caption = "Demographic of the blood sample
 pander(summary(dataset), split.tables = 100)
 
 ## ---- exp-box ----
-# Boxplot function
-create.plots <- function(y.values, y.label, plt.tag) {
-  list(ggplot(data = control, aes(x = diagnosis, y = !!sym(y.values))) +
-    geom_boxplot(outlier.color = "red", outlier.shape = 1, aes(fill = "Control")) +
-    geom_boxplot(data = benign, outlier.color = "red", outlier.shape = 1,
-                 aes(fill = "Benign")) +
-    geom_boxplot(data = pdac, outlier.color = "red", outlier.shape = 1,
-                 aes(fill = "PDAC")) +
-    labs(x = "Diagnosis", y = y.label, tag = plt.tag) +
-    scale_fill_manual(values = c("red", "green", "blue"),
-                      limits = c("Control", "Benign", "PDAC"),
-                      name = ""))
-}
-
 # Create the boxplots for the different columns
 y.values <- names(dataset[5:8])
 y.labs <- c("log(Creatinine) (mg/ml)", "log(LYVE1) (ng/ml)", "log(REG1B) (ng/ml)",
