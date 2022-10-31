@@ -45,6 +45,13 @@ dataset <- dataset %>%
         stage == "III" ~ "III-IV",
         stage == "IV" ~ "III-IV" ),
       level = c("Control", "Benign", "I-IIA", "I-II", "III-IV")
+    ),
+    ## Factor if there's a blood sample or not
+    blood = factor(
+      dplyr::case_when(
+        plasma_CA19_9 >= 0 ~ "yes",
+        TRUE ~ "no"),
+      level = c("yes", "no")
     )
   )
 
@@ -77,30 +84,15 @@ dataset[5:9] <- log.data
 control <- subset(dataset, diagnosis == 1)
 benign <- subset(dataset, diagnosis == 2)
 pdac <- subset(dataset, diagnosis == 3)
-blood <- subset(dataset, plasma_CA19_9 >= 0)
-
-# Drop the "plasma" column
-dataset <- dataset[,-5]
 
 # Demographics
-demograph <- data.frame(c(sum(control$sex == "F"), sum(control$sex == "M")),
-                        c(sum(benign$sex == "F"), sum(benign$sex == "M")),
-                        c(sum(pdac$sex == "F"), sum(pdac$sex == "M")))
+demograph <- dataset %>%
+  group_by(sex, diagnosis, stage) %>% tally()
+demograph.blood <- dataset %>%
+  group_by(sex, blood) %>% tally()
 
-blood.demo <- data.frame(c(sum(blood$sex == "F" & blood$diagnosis == 1),
-                           sum(blood$sex == "M" & blood$diagnosis == 1)),
-                         c(sum(blood$sex == "F" & blood$diagnosis == 2),
-                           sum(blood$sex == "M" & blood$diagnosis == 2)),
-                         c(sum(blood$sex == "F" & blood$diagnosis == 3),
-                           sum(blood$sex == "M" & blood$diagnosis == 3)))
-
-colnames(blood.demo) <- c("Control", "Benign", "PDAC")
-colnames(demograph) <- c("Control", "Benign", "PDAC")
-demograph <- rbind(demograph, blood.demo)
-rownames(demograph) <- c("Female total", "Male total", "Female blood", "Male blood")
-
-pander(demograph, booktabs = T, caption = "Demographic of the samples",
-       justify = c("left", "center", "center", "center"))
+pander(demograph, booktabs = T, caption = "Demographic of the samples")
+pander(demograph.blood, booktabs = T, caption = "Demographic of the blood samples")
 
 ## ---- explore-var ----
 # Summary dataset
