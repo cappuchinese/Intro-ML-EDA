@@ -59,6 +59,11 @@ comparison <- comparison[-1,]
 comparison <- apply(comparison, 2, as.numeric)
 rownames(comparison) <- c("REG1A", "REG1B")
 comparison[comparison > 0.05] <- "ns"
+pander(comparison[,c(2,4,6)], split.tables = 100, booktabs = T,
+       caption = "\\label{tab:comp}Adjusted p-values of Kruskal-Wallis test,
+       Dunn's multiple comparisons; ns - not significant.
+       The header shows the groups that were compared.")
+pander(comparison[,c(1,3,5)], split.tables = 100, booktabs = T)
 
 dataset <- dataset[,!(names(dataset) %in% "REG1A")]
 
