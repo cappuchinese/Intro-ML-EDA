@@ -55,6 +55,7 @@ dataset <- dataset %>%
     )
   )
 
+## ---- reg-vs ----
 # Perform the tests
 REG1A <- dunnTest(dataset$REG1A ~ dataset$diagnosis_group)
 REG1B <- dunnTest(dataset$REG1B ~ dataset$diagnosis_group)
@@ -133,7 +134,7 @@ cor_matrix <- cor(dataset[,5:8])
 heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation matrix")
 
 ## ---- pca ----
-pca <- prcomp(dataset[,5:8], center = TRUE, scale. = TRUE)
+pca <- prcomp(dataset[,6:9], center = TRUE, scale. = TRUE)
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE) +
   ggtitle("PCA of complete dataset") +

@@ -78,7 +78,6 @@ A log-transformation is applied to correct this.
 
 The samples are then grouped by diagnosis for easier access of the different samples.
 Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples.
-After the blood samples are seperated the column can be dropped.
 \newpage
 ```{r demograph}
 ```
