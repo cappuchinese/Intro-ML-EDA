@@ -154,11 +154,30 @@ The confusion matrices for this project will look a bit like this:
 \end{table}
 ```
 
+### Sensitivity and specificity
+Generally important for machine learning algorithms, but also for this project: Sensitivity and specificity. Also known as the true positive rate (TPR), sensitivity is calculated as $\frac{TP}{TP+FN}$ whereas specificity - or the true negative rate (TNR) - is calculated as $\frac{TN}{TN+FP}$.
 
-## Metrics
-For predictive models
+### Area under ROC
+A receiver operating characteristic curve, or ROC curve, is a curve when the TPR is plotted against the false positive rate (FPR). The curve describes how well the algorithm classified and can be manipulated with various cutoffs.
 
-## Weka: Model Exploration
+why important metric
+
+\newline
+## Weka: Model exploration
+For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV). For the code used to prepare the data, see Section \ref{appendix-a}.
+```{r}
+cleaned <- read.csv("../data/cleaned_data.csv")
+pander(head(cleaned))
+```
+
+To set a baseline, the data is run through different types of algorithms in Weka with 10-fold cross validation:
+```{r weka-base}
+```
+
+These results show a relative low sensitivity and high FNR. Some algorithms have a low ROC value, low sensitivity and low accuracy: OneR, IBk, and J48 are not further analysed.
+OneR will be kept to set a baseline. The SMO algorithm has a low sensitivity and the highest FNR, therefor also dropped.
+
+###
 
 \newpage
 # Appendix A

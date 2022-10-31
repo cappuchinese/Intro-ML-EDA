@@ -126,3 +126,17 @@ ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
   ggtitle("PCA of complete dataset") +
   guides(color = guide_legend(title = "Diagnosis")) +
   theme(legend.position = "bottom")
+
+## ---- weka-base ----
+# Read the results
+result <- read_csv("../data/weka_out/base.csv")
+# Make algorithm names readable
+result <- algorithm.names(result)
+# Results
+x <- result %>%
+        group_by(Key_Scheme) %>%
+        summarise_at(vars(Percent_correct, True_positive_rate, True_negative_rate,
+                          Area_under_ROC), list(mean = mean))
+names(x) <- c("Algorithm", "Accuracy", "Sensitivity", "Specificity", "AUROC")
+cap <-  "Algorithm comparison: '*' = significantly worse; 'v' = significantly better"
+pander(x, booktabs = T, split.tables = 100, caption = cap)
