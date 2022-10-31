@@ -113,94 +113,43 @@ Every point close tho the origin have values close to the mean for all variables
 
 \newpage
 # Machine Learning
-## Model exploration
-For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV). For the code used to prepare the data, see
-```{r}
-cleaned <- read.csv("../data/cleaned_data.csv")
-pander(head(cleaned))
-```
+## Quality Metrics
+Accuracy is the most important quality metric to measure the performance of an algorithm. Though it is easy to choose an algorithm this way, there are always multiple algorithms one can take as final option. Hence, other quality metrics have to be taken in account to make the optimal choice.
 
-To set a baseline, the data is run through different types of algorithms in Weka:
+For this project, the model is a finished product, trained and tested with the already collected data. New samples for this model are manually inserted by the acting physician, thus speed is not a relevant metric. Naturally, it is of more importance a patient with a malignant cancer should not be classified as benign, rather than a patient with a benign case being classified as malignant. These errors can be visualized in a confusion matrix, which almost all algorithms output.
+
+### Confusion Matrix
+A standard confusion matrix is a 2x2 matrix which shows all the correct hits and rejections, and errors. In Weka, a confusion matrix looks a bit like this:
 ```{=latex}
-\begin{table}[h!]
+\begin{table}[h]
     \centering
-    \caption{Results algorithm comparison in Weka, `*' = significantly worse; `v' = significantly better}
-    \label{tab:weka1}
-    \begin{tabular}{@{}llllll@{}}
+    \caption{Example of a confusion matrix}
+    \label{tab:ex_cm}
+    \begin{tabular}{cc|l}
+        a & b & <- classified as\\
         \hline
-        \textbf{Algorithm} & \textbf{Accuracy} & \textbf{Sensitivity} & \textbf{Specificity} & \textbf{ROC} & \textbf{FNR}\\
-        \hline
-        \hline
-        ZeroR & 35.25\% & 0.00 & 1.00 & 0.50 & 1.00\\
-        \hline
-        OneR & 41.19\% v & 0.48 v & 0.78 * & 0.63 v & 0.52 *\\
-        NaiveBayes & 48.66\% v & 0.57 v & 0.80 * & 0.82 v & 0.43 *\\
-        SimpleLogistics & 53.36\% v & 0.53 v & 0.83 * & 0.82 v & 0.47 *\\
-        SMO & 51.93\% v & 0.42 v & 0.88 * & 0.78 v & 0.58 *\\
-        IBk & 43.25\% v & 0.39 v & 0.89 * & 0.64 v & 0.58 *\\
-        J48 & 48.44\% v & 0.58 v & 0.78 * & 0.78 v & 0.42 *\\
-        RandomForest & 55.54\% v & 0.66 v & 0.82 * & 0.85 v & 0.34 *\\
-        \hline
+        TP & FP & a = Malignant\\
+        FN & TN & b = Benign\\
     \end{tabular}
 \end{table}
 ```
 
-These results show a relative low sensitivity and high FNR. Some algorithms have a low ROC value, low sensitivity and low accuracy: OneR, IBk, and J48 are not further analysed.
-OneR will be kept to set a baseline. The SMO algorithm has a low sensitivity and the highest FNR, therefor also dropped.
+In this example, the correctly classified malignant instances are true positive (TP) and correctly classified benign instances are true negative (TN). The benign instances that were classified as malignant are false positive (FP) and malignant instances that were classified as benign are false negative (FN).
 
-
+The example shows a situation where the algorithm can choose between two classes. In this project, there are 4 different classes, so what does a confusion matrix like that look like?Since there is no one TP or one FN, the different values are given per class. To get the confusion matrix of one class, the chosen class is the hit instance (positive), whereas all the other classes are the rejections (negatives).\newline
+The confusion matrices for this project will look a bit like this:
 ```{=latex}
-\begin{table}[h!]
+\begin{table}[h]
     \centering
-    \caption{Confusion matrix per algorithm}
-    \label{tab:cm1}
-    \begin{tabular}{|cccc|c|}
-        \multicolumn{5}{c}{\textbf{NaiveBayes}}\\
+    \caption{Example of a project confusion matrix}
+    \label{tab:cm_project}
+    \begin{tabular}{cccc|l}
+        a & b & c & d & <- classified as\\
         \hline
-        \hline
-        a & b & c & d & classified as\\
-        \hline
-        105 & 60 & 6 & 12 & a = Control\\
-        74 & 96 & 21 & 17 & b = Benign\\
-        1 & 23 & 43 & 35 & c = I-II\\
-        3 & 10 & 35 & 49 & d = III-IV\\
-        \hline
-    \end{tabular}
-    \begin{tabular}{|cccc|c|}
-        \multicolumn{5}{c}{\textbf{SimpleLogistics}}\\
-        \hline
-        \hline
-        a & b & c & d & classified as\\
-        \hline
-        94 & 85 & 2 & 2 & a = Control\\
-        49 & 143 & 11 & 5 & b = Benign\\
-        3 & 29 & 42 & 28 & c = I-II\\
-        2 & 17 & 35 & 43 & d = III-IV\\
-        \hline
-    \end{tabular}
-    \begin{tabular}{|cccc|c|}
-        \multicolumn{5}{c}{\textbf{SMO}}\\
-        \hline
-        \hline
-        a & b & c & d & classified as\\
-        \hline
-        70 & 112 & 1 & 0 & a = Control\\
-        37 & 155 & 11 & 5 & b = Benign\\
-        3 & 34 & 42 & 23 & c = I-II\\
-        2 & 28 & 32 & 35 & d = III-IV\\
-        \hline
-    \end{tabular}
-    \begin{tabular}{|cccc|c|}
-        \multicolumn{5}{c}{\textbf{RandomForest}}\\
-        \hline
-        \hline
-        a & b & c & d & classified as\\
-        \hline
-        177 & 60 & 0 & 6 & a = Control\\
-        57 & 129 & 14 & 8 & b = Benign\\
-        8 & 35 & 32 & 27 & c = I-II\\
-        5 & 27 & 28 & 37 & d = III-IV\\
-        \hline
+        hit & error & error & error & a = Control\\
+        error & hit & error & error & b = Benign\\
+        error & error & hit & error & c = I-II\\
+        error & error & error & hit & d = III-IV\\
     \end{tabular}
 \end{table}
 ```
