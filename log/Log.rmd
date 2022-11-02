@@ -21,7 +21,8 @@ knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::read_chunk("EDA.R")
+knitr::read_chunk("../src/EDA.R")
+knitr::read_chunk("../src/data_cleaning.R")
 source("../src/functions.R", local = knitr::knit_global())
 ```
 [//]: # (toc)
@@ -160,12 +161,12 @@ Generally important for machine learning algorithms, but also for this project: 
 ### Area under ROC
 A receiver operating characteristic curve, or ROC curve, is a curve when the TPR is plotted against the false positive rate (FPR). The curve describes how well the algorithm classified and can be manipulated with various cutoffs.
 
-why important metric
+why important metric?
 
-\newline
+\newpage
 ## Weka: Model exploration
-For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV). For the code used to prepare the data, see Section \ref{appendix-a}.
-```{r}
+For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV).
+```{r cleaning}
 cleaned <- read.csv("../data/cleaned_data.csv")
 pander(head(cleaned))
 ```
@@ -176,12 +177,12 @@ To set a baseline, the data is run through different types of algorithms in Weka
 
 With the `data/base.exp` file, all the options used for this run can be imported into Weka. Add the desired data and fill in the `Results Destination` for the run.
 
-These results show a relative low accuracy and sensitivity. Some algorithms also have a low ROC value, putting the cutoff at 0.8: OneR, SMO, IBk and J48 will not be used. As for the remaining three: NaiveBayes has by far the lowest accuracy of them and is therefor also dropped. Leaving the options SimpleLogistic and RandomForest.
+These results show a relative low accuracy and sensitivity. Some algorithms also have a low ROC value, putting the cutoff at 0.8: OneR, SMO, IBk and J48 will not be used. As for the remaining three: NaiveBayes has by far the lowest accuracy of them and is therefor also dropped. Leaving the options Logistic and RandomForest. Since earlier shown there is a linear correlation between the different variables, the Logistic algorithm would be more fitting for this type of data.
 
-### Optimize algorithm
-To create the optimal model, the data is first split into training and test data in a 70/30 ratio (see Section \ref{appendix-a}). To make sure the algorithm learns to predict less
-
-\newpage
-# Appendix A
-```{r file='../data/data_cleaning.R', eval = FALSE, attr.source='.numberLines'}
+### Data imbalance
+To prepare the data for the optimization, the data needs to be split into groups: one file containing `Control` and `PDAC` samples, another file containing `Benign` and `PDAC` samples. For the more insightful prediction on the early or late stages,
+```{r splitting}
 ```
+
+### Algorithm optimization
+For the optimization of the algorithm, Weka's ThresholdSelector classifier will be used. The algorithm supplies a threshold on the probability output of the given classifier. The options for the ThresholdSelector looks like the following:
