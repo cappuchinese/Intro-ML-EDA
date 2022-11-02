@@ -76,5 +76,12 @@ write.csv(control, "../data/wekafiles/control_train.csv", row.names = F, quote =
 write.csv(benign, "../data/wekafiles/benign_train.csv", row.names = F, quote = F, na="")
 write.csv(test, "../data/wekafiles/test.csv", row.names = F, quote = F, na="")
 
+# Change diagnosis to 1 PDAC label
+control["diagnosis" == "PDAC early" | "diagnosis" == "PDAC late"] <- "PDAC"
+benign["diagnosis" == "PDAC early" | "diagnosis" == "PDAC late"] <- "PDAC"
+
+write.csv(control, "../data/wekafiles/control_complete.csv", row.names = F, quote = F, na="")
+write.csv(benign, "../data/wekafiles/benign_complete.csv", row.names = F, quote = F, na="")
+
 # Set working directory back to log folder
 setwd("../log")
