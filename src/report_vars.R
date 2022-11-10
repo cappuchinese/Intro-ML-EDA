@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Name: EDA.R
+## Name: report_vars.R
 ##
 ## Author: Lisa Hu
 ##

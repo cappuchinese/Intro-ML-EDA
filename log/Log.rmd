@@ -21,7 +21,7 @@ knitr::opts_chunk$set(cache = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::read_chunk("../src/EDA.R")
+knitr::read_chunk("../src/log.R")
 knitr::read_chunk("../src/data_cleaning.R")
 source("../src/functions.R", local = knitr::knit_global())
 ```
@@ -36,7 +36,7 @@ invisible(lapply(packages, library, character.only = T))
 
 # Data description
 The data can be found on kaggle.com: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
-The files are saved as `Data.csv` and `Documentation.csv` for easier access.
+The files are saved as `~/data/Data.csv` and `~/data/Documentation.csv` for easier access.
 
 The following packages were used:
 
@@ -54,7 +54,7 @@ We first want to create an insight of our data:
 ```{r read-data}
 ```
 
-The information given in the codebook originates from the `Documentation.csv`. This file was given with the data file and can be found on the website.
+The information given in the codebook originates from the `~/data/Documentation.csv`. This file was given with the data file and can be found on the website.
 
 \newpage
 # Manipulate the data

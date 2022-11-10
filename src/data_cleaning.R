@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Name: EDA.R
+## Name: data_cleaning.R
 ##
 ## Author: Lisa Hu
 ##

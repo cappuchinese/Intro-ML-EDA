@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Name: EDA.R
+## Name: log.R
 ##
 ## Author: Lisa Hu
 ##

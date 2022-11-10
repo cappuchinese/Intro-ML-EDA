@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Name: EDA.R
+## Name: functions.R
 ##
 ## Author: Lisa Hu
 ##
