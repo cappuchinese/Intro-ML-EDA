@@ -38,16 +38,28 @@ dataset <- dataset %>%
         stage == "III" ~ "PDAC",
         stage == "IV" ~ "PDAC"),
       level = c("Control", "Benign", "PDAC")
+    ),
+    stage = factor(
+      dplyr::case_when(
+        stage == "I" ~ "early",
+        stage == "IA" ~ "early",
+        stage == "IB" ~ "early",
+        stage == "II" ~ "early",
+        stage == "IIA" ~ "early",
+        stage == "IIB" ~ "early",
+        stage == "III" ~ "late",
+        stage == "IV" ~ "late"),
+      level = c("early", "late")
     )
   )
 
 # Drop unnecessary columns
 drop <- c("sample_id", "patient_cohort", "sample_origin", "benign_sample_diagnosis",
-          "REG1A", "stage")
+          "REG1A")
 dataset <- dataset[,!(names(dataset) %in% drop)]
 
-# Move diagnosis to last column
-dataset <- dataset %>% select(-3, everything())
+# Move diagnosis and stage to last column
+dataset <- dataset %>% select(-c(3,4), everything())
 
 # Log transform and meann centering
 log.data <- log(dataset[3:7] +1)
@@ -59,17 +71,19 @@ set.seed(391)
 train.rows <- sort(sample(seq_len(nrow(dataset)), size = floor(0.7*nrow(dataset))))
 
 training <- dataset[train.rows,]
-test <- dataset[-train.rows,]
+test <- dataset[-train.rows,1:7]
 
 control <- subset(training,
                   training$diagnosis == "Control" | training$diagnosis == "PDAC")
 benign <- subset(training,
                        training$diagnosis == "Benign" | training$diagnosis == "PDAC")
+pdac <- subset(training, !is.na(training$stage))
 
 # Export dataset
 write.csv(dataset, "../data/wekafiles/cleaned_data.csv", row.names = F, quote = F, na="")
 write.csv(control, "../data/wekafiles/control_train.csv", row.names = F, quote = F, na="")
 write.csv(benign, "../data/wekafiles/benign_train.csv", row.names = F, quote = F, na="")
+write.csv(pdac, "../data/wekafiles/pdac_train.csv", row.names = F, quote = F, na="")
 write.csv(test, "../data/wekafiles/test.csv", row.names = F, quote = F, na="")
 
 # Set working directory back to log folder
