@@ -29,15 +29,15 @@ dataset <- dataset %>%
       dplyr::case_when(
         diagnosis == 1 ~ "Control",
         diagnosis == 2 ~ "Benign",
-        stage == "I" ~ "PDAC early",
-        stage == "IA" ~ "PDAC early",
-        stage == "IB" ~ "PDAC early",
-        stage == "II" ~ "PDAC early",
-        stage == "IIA" ~ "PDAC early",
-        stage == "IIB" ~ "PDAC early",
-        stage == "III" ~ "PDAC late",
-        stage == "IV" ~ "PDAC late"),
-      level = c("Control", "Benign", "PDAC early", "PDAC late")
+        stage == "I" ~ "PDAC",
+        stage == "IA" ~ "PDAC",
+        stage == "IB" ~ "PDAC",
+        stage == "II" ~ "PDAC",
+        stage == "IIA" ~ "PDAC",
+        stage == "IIB" ~ "PDAC",
+        stage == "III" ~ "PDAC",
+        stage == "IV" ~ "PDAC"),
+      level = c("Control", "Benign", "PDAC")
     )
   )
 
@@ -62,26 +62,15 @@ training <- dataset[train.rows,]
 test <- dataset[-train.rows,]
 
 control <- subset(training,
-                        training$diagnosis == "Control" |
-                          training$diagnosis == "PDAC early" |
-                          training$diagnosis == "PDAC late")
+                  training$diagnosis == "Control" | training$diagnosis == "PDAC")
 benign <- subset(training,
-                       training$diagnosis == "Benign" |
-                         training$diagnosis == "PDAC early" |
-                         training$diagnosis == "PDAC late")
+                       training$diagnosis == "Benign" | training$diagnosis == "PDAC")
 
 # Export dataset
 write.csv(dataset, "../data/wekafiles/cleaned_data.csv", row.names = F, quote = F, na="")
 write.csv(control, "../data/wekafiles/control_train.csv", row.names = F, quote = F, na="")
 write.csv(benign, "../data/wekafiles/benign_train.csv", row.names = F, quote = F, na="")
 write.csv(test, "../data/wekafiles/test.csv", row.names = F, quote = F, na="")
-
-# Change diagnosis to 1 PDAC label
-control["diagnosis" == "PDAC early" | "diagnosis" == "PDAC late"] <- "PDAC"
-benign["diagnosis" == "PDAC early" | "diagnosis" == "PDAC late"] <- "PDAC"
-
-write.csv(control, "../data/wekafiles/control_complete.csv", row.names = F, quote = F, na="")
-write.csv(benign, "../data/wekafiles/benign_complete.csv", row.names = F, quote = F, na="")
 
 # Set working directory back to log folder
 setwd("../log")
