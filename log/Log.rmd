@@ -129,60 +129,43 @@ A standard confusion matrix is a 2x2 matrix which shows all the correct hits and
     \begin{tabular}{cc|l}
         a & b & <- classified as\\
         \hline
-        TP & FP & a = Malignant\\
-        FN & TN & b = Benign\\
+        TP & FN & a = Control/Benign (healty)\\
+        FP & TN & b = Malignant\\
     \end{tabular}
 \end{table}
 ```
 
-In this example, the correctly classified malignant instances are true positive (TP) and correctly classified benign instances are true negative (TN). The benign instances that were classified as malignant are false positive (FP) and malignant instances that were classified as benign are false negative (FN).
+In this example, the correctly classified "healthy" instances are true positive (TP) and correctly classified "Malignant" instances are true negative (TN). The "healthy" instances that were classified as "Malignant" are false positive (FP) and malignant instances that were classified as benign are false negative (FN).
 
-The example shows a situation where the algorithm can choose between two classes. In this project, there are 4 different classes, so what does a confusion matrix like that look like?Since there is no one TP or one FN, the different values are given per class. To get the confusion matrix of one class, the chosen class is the hit instance (positive), whereas all the other classes are the rejections (negatives).\newline
-The confusion matrices for this project will look a bit like this:
-```{=latex}
-\begin{table}[h]
-    \centering
-    \caption{Example of a project confusion matrix}
-    \label{tab:cm_project}
-    \begin{tabular}{cccc|l}
-        a & b & c & d & <- classified as\\
-        \hline
-        hit & error & error & error & a = Control\\
-        error & hit & error & error & b = Benign\\
-        error & error & hit & error & c = I-II\\
-        error & error & error & hit & d = III-IV\\
-    \end{tabular}
-\end{table}
-```
-
-### Sensitivity and specificity
-Generally important for machine learning algorithms, but also for this project: Sensitivity and specificity. Also known as the true positive rate (TPR), sensitivity is calculated as $\frac{TP}{TP+FN}$ whereas specificity - or the true negative rate (TNR) - is calculated as $\frac{TN}{TN+FP}$.
+### Sensitivity and False Positive Rate
+Generally important for machine learning algorithms, but also for this project: Sensitivity and False Positive Rate (FPR). Also known as the true positive rate (TPR), sensitivity is calculated as $\frac{TP}{TP+FN}$. The FPR is calculated as $\frac{FP}{FP+TN}$.
 
 ### Area under ROC
-A receiver operating characteristic curve, or ROC curve, is a curve when the TPR is plotted against the false positive rate (FPR). The curve describes how well the algorithm classified and can be manipulated with various cutoffs.
-
-why important metric?
+A receiver operating characteristic curve, or ROC curve, is a curve when the TPR is plotted against the FPR. Previously concluded that these statistics are important, a ROC curve can visualise the better option.
 
 \newpage
 ## Weka: Model exploration
-For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign, I-II, and III-IV).
+For the exploration of the model, the data is cleaned it contains only the biomarkers and the classification labels (Control, Benign or PDAC).
 ```{r cleaning}
 cleaned <- read.csv("../data/cleaned_data.csv")
 pander(head(cleaned))
 ```
 
-To set a baseline, the data is run through different types of algorithms in Weka with 10-fold cross validation:
+The `~/data/wekafiles/base.exp` file contains all the options used for a baseline run in Weka. The data is run through different types of algorithms with 10-fold cross validation:
 ```{r weka-base}
 ```
 
-With the `data/base.exp` file, all the options used for this run can be imported into Weka. Add the desired data and fill in the `Results Destination` for the run.
-
 These results show a relative low accuracy and sensitivity. Some algorithms also have a low ROC value, putting the cutoff at 0.8: OneR, SMO, IBk and J48 will not be used. As for the remaining three: NaiveBayes has by far the lowest accuracy of them and is therefor also dropped. Leaving the options Logistic and RandomForest. Since earlier shown there is a linear correlation between the different variables, the Logistic algorithm would be more fitting for this type of data.
 
+\newpage
 ### Data imbalance
-To prepare the data for the optimization, the data needs to be split into groups: one file containing `Control` and `PDAC` samples, another file containing `Benign` and `PDAC` samples. For the more insightful prediction on the early or late stages,
-```{r splitting}
+To prepare the data for the optimization, the data needs to be split into groups: one file containing `Control` and `PDAC` samples, another file containing `Benign` and `PDAC` samples:
+```{r splitting, eval = FALSE}
 ```
 
 ### Algorithm optimization
-For the optimization of the algorithm, Weka's ThresholdSelector classifier will be used. The algorithm supplies a threshold on the probability output of the given classifier. The options for the ThresholdSelector looks like the following:
+For the optimization of the algorithm, Weka's ThresholdSelector classifier will be used. This algorithm allows a threshold on the probability output of the given classifier. It is important that the FPR is as low as possible, since no patient wants to be diagnosed healthy when there is something serious swarming around. Again, these options can be imported from `~/data/wekafiles/optimization.exp`
+```{r optimization}
+```
+
+The results of the `Logistic` classifier shows the base algorithm without the optimization. Though the accuracy is high, the FPR is too. The FPR needs to be as low as possible without the expense of the accuracy and TPR. Using the `Analyse` tab in the Weka Experimenter, Paired T-Tests can be performed to see which are significantly different. Comparing them with a significance of 0.001, the best option for the Control model is the one with a cutoff of 0.70, whereas the Benign model would be best with a cutoff of 0.60.
