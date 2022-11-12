@@ -134,9 +134,33 @@ result <- read_csv("../data/weka_out/base.csv")
 result <- algorithm.names(result)
 # Results
 x <- result %>%
-        group_by(Key_Scheme) %>%
-        summarise_at(vars(Percent_correct, True_positive_rate, True_negative_rate,
-                          Area_under_ROC), list(mean = mean))
-names(x) <- c("Algorithm", "Accuracy", "Sensitivity", "Specificity", "AUROC")
-cap <-  "Algorithm comparison: '*' = significantly worse; 'v' = significantly better"
+  group_by(Key_Scheme) %>%
+  summarise_at(vars(Percent_correct, True_positive_rate, False_positive_rate,
+                    Area_under_ROC), list(mean = weighted.mean))
+names(x) <- c("Algorithm", "Accuracy", "Sensitivity", "FPR", "AUROC")
+cap <-  "\\label{tab:weka}Results of the different algorithms from Weka"
 pander(x, booktabs = T, split.tables = 100, caption = cap)
+
+## ---- optimization ----
+# Read the optimization results
+opt.res <- read_csv("../data/weka_out/optimization.csv")
+# Make algorithm names readable
+opt.res <- algorithm.names(opt.res)
+opt.res <- opt.res %>%
+  mutate(
+    Options = factor(opt.res$Key_Scheme_options,
+                     level = unique(opt.res$Key_Scheme_options),
+                     labels = c("-", "0.550", "0.575", "0.600", "0.625", "0.65", "0.675"))
+  )
+opt.res$Options <- paste(opt.res$Key_Scheme, paste0("(", opt.res$Options, ")"))
+# Call the wanted results
+x <- opt.res %>%
+  group_by(Key_Dataset, Options) %>%
+  summarise_at(vars(Percent_correct, True_positive_rate, False_positive_rate),
+               list(mean = weighted.mean))
+names(x) <- c("Dataset", "Algorithm (threshold)", "Accuracy", "TPR", "FPR")
+cap <-  "Results of the ThresholdSelector with different thresholds "
+pander(x[8:14,2:5], booktabs = T, split.tables = 100,
+       caption = paste0("\\label{tab:control}", cap, "(Control vs. PDAC)."))
+pander(x[1:7,2:5], booktabs = T, split.tables = 100,
+       caption = paste0("\\label{tab:benign}", cap, "(Benign vs. PDAC)."))
