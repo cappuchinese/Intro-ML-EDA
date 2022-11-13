@@ -9,6 +9,7 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
+    fig_caption: yes
     latex_engine: xelatex
 ---
 ```{r include = FALSE}
@@ -49,13 +50,19 @@ The following packages were used:
 + ggpubr
 + ggbiplot
 
-\newpage
-# Reading the data
-We first want to create an insight of our data:
-```{r read-data}
+```{r libraries, warning = FALSE, message = FALSE}
+#' Load all the packages
+packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr", "ggbiplot")
+invisible(lapply(packages, library, character.only = T))
 ```
 
-The information given in the codebook originates from the `~/data/Documentation.csv`. This file was given with the data file and can be found on the website.
+Weka (v3.8.6) was used for the Machine Learning part.
+
+\newpage
+# Reading the data
+To create an insight on the data, a codebook is generated (see file `~/data/codebook.txt`). This information originates from the `~/data/Documentation.csv`. This file was given with the data file and can be found on the website.
+```{r read-data}
+```
 
 \newpage
 # Manipulate the data
@@ -66,52 +73,63 @@ A lot of the rows contain empty strings instead of NA, which has to be fixed fir
 
 \newpage
 ## REG1A vs. REG1B
+After the data manipulation, it looks a bit like this:
+```{r summary}
+```
+
+A lot of missing values can be seen in the REG1A column and imputation is not an option: Any type of imputation here can lead to data imbalance. REG1A and REG1B are very much alike, since both are regenerative proteins for the pancreas. Maybe a significance in performance can be traced when compared to each other:
+\newpage
 ```{r reg-vs}
 ```
 
-Although performance between the two is similar, a Kruskal-Wallis test with Dunn's multiple comparisons shows that REG1B outperforms REG1A when the control and benign samples are compared to the I-IIA PDAC samples.
-Therefor, REG1B was used further on in the experiments and REG1A is dropped.
+Although performance between the two is similar, a Kruskal-Wallis test with Dunn's multiple comparisons shows that REG1B outperforms REG1A when the control and benign samples are compared to the I-IIA PDAC samples. Therefor, REG1B was used further on in the experiments and REG1A is dropped.
 
+\newpage
 ## Log transformation
-A summary of the data shows very high maximum values, but rather low medians.
+The summary earlier also showed very high maximum values, but rather low medians.
 A log-transformation is applied to correct this.
 
 ```{r log-trans}
 ```
 
 The samples are then grouped by diagnosis for easier access of the different samples.
-Table 5 shows the different amounts of samples per diagnosis and the amount of which are also blood samples.
+Table \ref{tab:demo} shows the different amounts of samples per diagnosis and Table \ref{tab:blood} shows the amount of which are also blood samples.
 \newpage
 ```{r demograph}
 ```
 
 \newpage
 # Analyse the data
+It is important to know which variables are important and how they interact with each other. This chapter will focus on that with different methods.
+
 ## Boxplots
-```{r exp-box, fig.height = 8}
+
+```{r exp-box, fig.height = 8, fig.cap = "\\label{fig:box}Boxplots visualizing the spreads of the different biomarkers per diagnosis."}
 ```
 
-The outliers are not localized in a specific diagnosis group, but rather spread over the groups.
+(Boxplots print on the next page)
+
+The boxplots show that outliers are not localized in a specific diagnosis group, but rather spread over the groups, and the biomarkers are more expressed in the PDAC patients than the "healthy" groups.
 
 \newpage
 
 ## Correlation matrix
-```{r correlation}
+
+```{r correlation, fig.cap = "\\label{fig:cor}Heatmap of how correlated the different variables are. Gradient:correlation = dark-light:1-0"}
 ```
 
-The heatmap shows that there is not much correlation between creatinine and the other variables.
+The heatmap shows that there is not much correlation between creatinine and age, and the other variables.
 The other outstanding one has to be the TFF1 biomarker, being the most correlated variable to others.
 
 \newpage
 
 ## PCA
-```{r pca}
+A principal component analysis (PCA) enables the visualization of multidimensional data. The vectors in the plot indicate how related the variables are with each other: an angle <90&deg; = positively correlated, ~90&deg; = low correlation, >&deg; = negatively correlated. To determine the angle, take one vector and measure clockwise to the next vector. Every point close to the origin have values close to the mean for all variables.
+
+```{r pca, fig.cap = "\\label{fig:pca}PCA plot using PC1 and PC2. The colors indicate the diagnosis: 1 = Control, 2 = Benign, 3 = PDAC"}
 ```
 
-While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups.
-As earlier concluded from the heatmap, the creatinine biomarker does not show much relativeness with the other biomarkers.
-LYVE1 is nicely in between the TFF1 and REG1B biomarkers.
-Every point close tho the origin have values close to the mean for all variables.
+While the control and benign group show relative distance from the PDAC group, there is a still a lot of overlapping samples with the benign and PDAC groups. As earlier concluded from the heatmap, the creatinine and age variables are not that correlated to the other variables. REG1B and LYVE1 are basically on top of each other, with TFF1 really close.
 
 \newpage
 # Machine Learning
