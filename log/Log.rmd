@@ -30,12 +30,6 @@ source("../src/functions.R", local = knitr::knit_global())
 [//]: # (toc)
 
 \newpage
-```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
-#' Load all the packages
-packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr", "ggbiplot")
-invisible(lapply(packages, library, character.only = T))
-```
-
 # Data description
 The data can be found on kaggle.com: [Urinary biomarkers for pancreatic cancer](https://www.kaggle.com/datasets/johnjdavisiv/urinary-biomarkers-for-pancreatic-cancer)
 The files are saved as `~/data/Data.csv` and `~/data/Documentation.csv` for easier access.
@@ -49,10 +43,13 @@ The following packages were used:
 + ggplot2
 + ggpubr
 + ggbiplot
++ ggnewscale
++ RWeka
 
 ```{r libraries, warning = FALSE, message = FALSE}
 #' Load all the packages
-packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr", "ggbiplot")
+packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr",
+              "ggbiplot", "ggnewscale", "RWeka")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -139,7 +136,7 @@ Accuracy is the most important quality metric to measure the performance of an a
 For this project, the model is a finished product, trained and tested with the already collected data. New samples for this model are manually inserted by the acting physician, thus speed is not a relevant metric. Naturally, it is of more importance a patient with a malignant cancer should not be classified as benign, rather than a patient with a benign case being classified as malignant. These errors can be visualized in a confusion matrix, which almost all algorithms output.
 
 ### Confusion Matrix
-A standard confusion matrix is a 2x2 matrix which shows all the correct hits and rejections, and errors. In Weka, a confusion matrix looks a bit like this:
+A standard confusion matrix is a 2x2 matrix which shows all the correct hits and rejections, and errors. In Weka and based on the project, a confusion matrix looks a bit like this:
 ```{=latex}
 \begin{table}[h]
     \centering
@@ -148,7 +145,7 @@ A standard confusion matrix is a 2x2 matrix which shows all the correct hits and
     \begin{tabular}{cc|l}
         a & b & <- classified as\\
         \hline
-        TP & FN & a = Control/Benign (healty)\\
+        TP & FN & a = Control/Benign (healthy)\\
         FP & TN & b = Malignant\\
     \end{tabular}
 \end{table}
@@ -157,9 +154,10 @@ A standard confusion matrix is a 2x2 matrix which shows all the correct hits and
 In this example, the correctly classified "healthy" instances are true positive (TP) and correctly classified "Malignant" instances are true negative (TN). The "healthy" instances that were classified as "Malignant" are false positive (FP) and malignant instances that were classified as benign are false negative (FN).
 
 ### Sensitivity and False Positive Rate
-Generally important for machine learning algorithms, but also for this project: Sensitivity and False Positive Rate (FPR). Also known as the true positive rate (TPR), sensitivity is calculated as $\frac{TP}{TP+FN}$. The FPR is calculated as $\frac{FP}{FP+TN}$. The FPR can also be derived from the True Negative Rate (TNR): $FPR = 1 - TNR$
+Generally important for machine learning algorithms, but also for this project: Sensitivity and False Positive Rate (FPR). Also known as the true positive rate (TPR), sensitivity is calculated as $\frac{TP}{TP+FN}$. The FPR is calculated as $\frac{FP}{FP+TN}$.
 
-These two
+### Area under ROC
+The receiver operating characteristic (ROC) curve is graphical plot that shows the ability of the algorithm, by plotting the TPR against the FPR.
 
 \newpage
 ## Weka: Model exploration
@@ -184,4 +182,11 @@ For the optimization of the algorithm, Weka's ThresholdSelector classifier will 
 ```{r optimization}
 ```
 
-The results of the `Logistic` classifier shows the base algorithm without the optimization. Though the accuracy is high, the FPR is too. The FPR needs to be as low as possible without the expense of the accuracy and TPR, so the highest TPR and lowest FPR possible. Using the `Analyse` tab in the Weka Experimenter, Paired T-Tests can be performed to see which algorithm is significant different on the given comparison field. Comparing with a significance of 0.05, the best option for the Control model is the one with a cutoff of 0.600, whereas the Benign model would be best with a cutoff of 0.55. These two highest cutoffs that show no significant raise in FPR when compared to the Logistic algorithm.
+The results of the `Logistic` classifier shows the base algorithm without the optimization. Though the accuracy is high, the FPR is too. The FPR needs to be as low as possible without the expense of the accuracy and TPR, so the highest TPR and lowest FPR possible. Using the `Analyse` tab in the Weka Experimenter, Paired T-Tests can be performed to see which algorithm is significant different on the given comparison field. Comparing with a significance of 0.05, the best option for the Control model is the one with a cutoff of 0.600, whereas the Benign model would be best with a cutoff of 0.550. These two highest cutoffs that show no significant raise in FPR when compared to the Logistic algorithm.
+
+\newpage
+### ROC curve
+
+[//]: # (TODO)
+```{r roc, fig.cap = "\\label{fig:roc}ROC curve of the two models. Gradient shows the thresholds"}
+```

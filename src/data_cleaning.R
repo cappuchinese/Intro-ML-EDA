@@ -67,7 +67,7 @@ benign <- subset(training,
                        training$diagnosis == "Benign" | training$diagnosis == "PDAC")
 
 # Set last column of test data to "?"
-test[,8] <- "?"
+test[,8] <- NA
 
 # Export dataset
 write.csv(dataset, "../data/wekafiles/cleaned_data.csv", row.names = F, quote = F, na="")

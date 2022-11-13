@@ -35,3 +35,23 @@ algorithm.names <- function(weka.res){
                                 labels = labels)
   return(weka.res)
 }
+
+# Unfinished
+significance.check <- function(important) {
+  y <- important$control_train %>%
+    select(-1) %>%
+    gather(key = type, value = value, Percent_correct, True_positive_rate, True_negative_rate, False_positive_rate, False_negative_rate) %>%
+    group_by(Options, type) %>%
+    summarise(value = list(value)) %>%
+    spread(Options, value) %>%
+    group_by(type)
+
+  for (type in seq(nrow(y))){
+    for (algorithm in seq(3,8)){
+      p.value <- t.test(unlist(y[type,2]), unlist(y[type,algorithm]))$p.value
+      if (p.value < 0.05) {
+        cat(type,"-", algorithm, "* ")
+      }
+    }
+  }
+}

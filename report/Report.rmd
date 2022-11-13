@@ -2,6 +2,7 @@
 author: Lisa Hu
 output:
   pdf_document:
+    citation_package: natbib
     fig_caption: yes
     toc: true
     toc_depth: 2
@@ -26,11 +27,12 @@ knitr::opts_chunk$set(error = FALSE)
 BOSS_MODE <- TRUE
 
 # Load all the packages
-packages <- c("dplyr", "ggplot2", "readr", "pander", "ggbiplot", "FSA")
+packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr",
+              "ggbiplot", "ggnewscale", "RWeka")
 invisible(lapply(packages, library, character.only = T))
 
 # Load external scripts
-source("../src/fucntions.R", local = knitr::knit_global())
+source("../src/functions.R", local = knitr::knit_global())
 source("../src/report_vars.R", local = knitr::knit_global())
 ```
 
@@ -38,11 +40,60 @@ source("../src/report_vars.R", local = knitr::knit_global())
 \pagenumbering{arabic}
 
 # Introduction
+Pancreatic cancer is one of the deadliest variations of cancer with 5-year survival rates of below 20%. [\ref{ref:england}] Pancreatic ductal adenocarcinoma is mostly diagnosed when in its later stages as there are almost no useful biomarkers for detection in the earlier stages.
+Serum CA19.9 has been shown to be promising in the detection and is the only biomarker in clinical practice, but is not sensitive or specific enough to use for screening. [\ref{ref:ca19}]
+Other methods of cancer research, such as a biopsy, are rather invasive and usually done when it is already in the later stages.
 
-https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-until-2019/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-to-2019
+While traditionally blood is the main source for biomarker analysis, urine presents alternatives. This method enables non-invasive sampling, easier repeated collections and a higher volume of samples. Not only is it beneficial for the patient: urine contains a higher concentration of the biomarkers due to the continuous ultrafiltration of the blood. [\ref{ref:urine}]
+
+To prevent patients getting diagnosed with PDAC in the later stages: Could a Machine Learning model be build to predict the patient its diagnose based on the urine samples' biomarkers?
+
+\newpage
+# Materials
+To analyse the different biomarkers, an exploratory data analysis (EDA) was build in R. For this analysis, various packages were used:
+
+| **Software**            | **Package**                        | **Version**   |
+|-------------------------|------------------------------------|---------------|
+| R [\ref{ref:r}]         |                                    | 4.2.1         |
+|                         | tidyr [\ref{ref:tidyr}]            | 1.2.1         |
+|                         | dplyr [\ref{ref:dplyr}]            | 1.0.10        |
+|                         | pander [\ref{ref:pander}]          | 0.6.5         |
+|                         | readr [\ref{ref:readr}]            | 2.1.3         |
+|                         | FSA [\ref{ref:fsa}]                | 0.9.3         |
+|                         | ggplot2 [\ref{ref:ggplot}]         | 3.3.5         |
+|                         | ggpubr [\ref{ref:ggpubr}]          | 0.4.0         |
+|                         | ggnewscale [\ref{ref:scale}]       | 1.1.1         |
+|                         | RWeka [\ref{ref:rweka}]            | 0.4-44        |
+| Weka [\ref{ref:weka}]   |                                    | 3.8.6         |
+|                         | thresholdSelector [\ref{ref:ts}]   | 1.0.3         |
+
+Table: Software and packages \label{tab:pkgs}
 
 \newpage
 # Methods
+## Quality metrics
+To create a fitting model, different quality metrics need to be taken in account to optimize the output. The most evident metric is the accuracy. Because accuracy is not insightful enough to distinguish the performance of the different algorithms, other quality metrics need to be analysed as well.
+
+One of those quality metrics is a confusion matrix. This table layout allows visualization on the performance of an algorithm. Table \ref{tab:ex_cm} shows an example of a confusion matrix.
+```{=latex}
+\begin{table}[h]
+    \centering
+    \caption{Example of a confusion matrix: TP = true positives; FN = false negatives; FP = false positives; TN = true negatives}
+    \label{tab:ex_cm}
+    \begin{tabular}{cc|l}
+        a & b & <- classified as\\
+        \hline
+        TP & FN & a = Healthy\\
+        FP & TN & b = Malignant\\
+    \end{tabular}
+\end{table}
+```
+
+In this confusion matrix, the so-called "hits" are the true positives (TP) whereas the "correct rejections" are the true negatives (TN). The falsely predicted instances are either false negatives (FN) or false positives (FP). In this case, FN imply the "Healthy" instances being predicted as "Malignant" and the FP imply the "Malignant" instances being predicted as "Healthy". For the creation of this model, it is important the FP is as low as possible while getting the highest possible outcomes for TN.
+
+This leads to the next quality metrics: sensitivity - or true positive rate (TPR) -, the false positive rate (FPR) and the true negative rate (TNR). The TPR is calculated as $\frac{TP}{TP+FN}$ and the FPR as $\frac{FP}{FP+TN}$. The TNR can be derived from the FPR: $1 - FPR$. These different rates describe the probability the algorithm will classify it as. This model seeks a high TPR and low FPR, thus a high TNR.
+
+Another noting quality metric is the receiver operating characteristic (ROC) curve. By plotting the TPR against the FPR, a curve is created and can tell the performance of an algorithm. The further the curvature is pushed to the top-left corner, the better the classifier model.
 
 \newpage
 # Results
@@ -71,7 +122,7 @@ Though the performance of REG1A and REG1B are very similar, REG1B outperformed R
 pander(comparison[,c(2,4,6)], split.tables = 100, booktabs = T,
        caption = "\\label{tab:comp}Adjusted p-values of Kruskal-Wallis test,
        Dunn's multiple comparisons; ns - not significant.
-       The header shows the groups that were compared.")
+       The header shows the groups that were compared. (Table continues below)")
 pander(comparison[,c(1,3,5)], split.tables = 100, booktabs = T)
 ```
 
@@ -79,7 +130,7 @@ pander(comparison[,c(1,3,5)], split.tables = 100, booktabs = T)
 ## Correlation in urine biomarkers for different diagnosis groups
 The biomarker panel was tested in a total of 590 urine samples (183 control, 208 benign, and 199 PDAC). According to the PCA, the LYVE1 and REG1B biomarkers are close related to each other. Aside from that, the different diagnosis groups create clusters, meaning there is significant difference between the samples.
 
-```{r, fig.cap = "\\label{fig:fig2}PCA plot showing the correlations between the biomarkers. Data is log transformed."}
+```{r, fig.cap = "\\label{fig:fig1}PCA plot showing the correlations between the biomarkers. Data is log transformed."}
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE, size = 0.1) +
   ggtitle("PCA of complete dataset") +
@@ -87,11 +138,44 @@ ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
 ```
 
 \newpage
+## Performance of the different possible algorithms
+To create a fitting model, multiple algorithms are run over the samples. Table \ref{tab:weka} shows the important results of the different classifiers.
+```{r}
+pander(result, booktabs = T, split.tables = 100, caption = cap)
+```
+
+These results show a relative low accuracy and sensitivity. Some algorithms also have a low ROC value, putting the cutoff at 0.8: OneR, SMO, IBk and J48 will not be used. As for the remaining three: NaiveBayes has by far the lowest accuracy of them and is therefor also dropped. Leaving the options Logistic and RandomForest. Since earlier shown there is a linear correlation between the different variables, the Logistic algorithm would be more fitting for this type of data.
+
+\newpage
+## Algorithm optimization
+```{r}
+pander(x[8:14,2:5], booktabs = T, split.tables = 100,
+       caption = paste0("\\label{tab:control}", cap, "(Control vs. PDAC)."))
+pander(x[1:7,2:5], booktabs = T, split.tables = 100,
+       caption = paste0("\\label{tab:benign}", cap, "(Benign vs. PDAC)."))
+
+# Plot FPR against TPR + gradient of Threshold
+ggplot(data = roc.control, aes(`False Positive Rate`, `True Positive Rate`)) +
+  geom_point(aes(colour = Threshold)) +
+  scale_color_gradientn(colors = c('#3f5efb', '#fc466b'), name = "Control-PDAC") +
+  new_scale_color() +
+  geom_point(data = roc.benign, aes(colour = Threshold)) +
+  scale_color_gradientn(colors = c('#22c1c3', '#fdbb2d'), name = "Benign-PDAC") +
+  ggtitle("ROC curves of the two models")
+```
+
+\newpage
 # Conclusion
 + REG1A shows no significant difference when control samples are compared to PDAC stage I-IIA samples, though REG1B does show significance: REG1B outperforms REG1A in detecting PDAC in early stages.
 + LYVE1 and REG1B are closely related biomarkers. A good focus for the prediction following.
++
 
 # Discussion
+Though REG1A is a viable biomarker, the data delivered contained a lot of missing values for this biomarker. Data imputation was not an option since that would cause an imbalance. Therefor it was left out for the creation of the model.
+
+Plasma CA19.9 is a blood biomarker and not a urine biomarker. This model did include the data from the plasma CA19.9 results, but it can still be used without a CA19.9 sample.
+
+Keep in mind when using the model, all data is log transformed.
 
 \newpage
 # References

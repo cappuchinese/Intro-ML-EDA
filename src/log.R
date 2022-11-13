@@ -16,8 +16,9 @@
 ## ---- read-data ----
 dataset <- read_csv("../data/Data.csv")
 codebook <- read_delim("../data/codebook.txt", delim = "|")
-pander(codebook[1:4], booktabs = T, caption = "Data values", split.tables = 100)
-pander(codebook[c(1,5)], booktabs = T, caption = "Description",
+pander(codebook[1:4], booktabs = T, split.tables = 100,
+       caption = "Codebook explaining each column in the given data (Continues below)")
+pander(codebook[c(1,5)], booktabs = T, caption = "Further explanation of the columns",
        justify = c("right", "left"), split.tables = 100)
 
 ## ---- change-data ----
@@ -55,6 +56,10 @@ dataset <- dataset %>%
     )
   )
 
+## ---- summary ----
+pander(summary(dataset), booktabs = T, split.tables = 100,
+       caption = "A quick summary of the dataset")
+
 ## ---- reg-vs ----
 # Perform the tests
 REG1A <- dunnTest(dataset$REG1A ~ dataset$diagnosis_group)
@@ -70,15 +75,16 @@ comparison[comparison > 0.05] <- "ns"
 pander(comparison[,c(2,4,6)], split.tables = 100, booktabs = T,
        caption = "\\label{tab:comp}Adjusted p-values of Kruskal-Wallis test,
        Dunn's multiple comparisons; ns - not significant.
-       The header shows the groups that were compared.")
+       The header shows the groups that were compared. (Table continues below)")
 pander(comparison[,c(1,3,5)], split.tables = 100, booktabs = T)
 
 dataset <- dataset[,!(names(dataset) %in% "REG1A")]
 
 ## ---- log-trans ----
-pander(summary(dataset), split.table = 100)
 log.data <- log(dataset[5:9] +1)
 dataset[5:9] <- log.data
+pander(summary(dataset), booktabs = T, split.tables = 100,
+       caption = "Summary of the data after the log transformation")
 
 ## ---- demograph ----
 # Different diagnosis and blood groups
@@ -92,8 +98,10 @@ demograph <- dataset %>%
 demograph.blood <- dataset %>%
   group_by(sex, blood) %>% tally()
 
-pander(demograph, booktabs = T, caption = "Demographic of the samples")
-pander(demograph.blood, booktabs = T, caption = "Demographic of the blood samples")
+pander(demograph, booktabs = T,
+       caption = "\\label{tab:demo}Demographic of the samples")
+pander(demograph.blood, booktabs = T,
+       caption = "\\label{tab:blood}Demographic of the blood samples")
 
 ## ---- explore-var ----
 # Summary dataset
@@ -101,29 +109,30 @@ pander(summary(dataset), split.tables = 100)
 
 ## ---- exp-box ----
 # Create the boxplots for the different columns
-y.values <- names(dataset[5:8])
-y.labs <- c("log(Creatinine) (mg/ml)", "log(LYVE1) (ng/ml)", "log(REG1B) (ng/ml)",
+y.values <- names(dataset[5:9])
+y.labs <- c("log(CA19.9) (U/ml)", "log(Creatinine) (mg/ml)", "log(LYVE1) (ng/ml)", "log(REG1B) (ng/ml)",
             "log(TFF1) (ng/ml)")
-plt.tag <- c("a", "b", "c", "d")
+plt.tag <- c("a", "b", "c", "d", "e")
 plts <- mapply(create.plots, y.values, y.labs, plt.tag)
 
 # Grid and print the plots
 p1 <- ggarrange(plotlist = plts[1:2], ncol = 2,
                 common.legend = TRUE, legend = "bottom")
-p2 <- ggarrange(plotlist = plts[3:4], ncol = 2,
+p2 <- ggarrange(plotlist = plts[3:5], ncol = 3,
                 common.legend = TRUE, legend = "none")
 my.grid <- ggarrange(p1, p2, nrow = 2)
-print(annotate_figure(my.grid))
+print(annotate_figure(my.grid, top = text_grob("Boxplots visualizing the biomarkers",
+                                               face = "bold")))
 
 ## ---- correlation ----
-cor_matrix <- cor(dataset[,5:8])
-heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation matrix")
+cor_matrix <- cor(dataset[,c(1,6:9)])
+heatmap(cor_matrix, scale = "column", Colv = NA, Rowv = NA, main = "Correlation heatmap")
 
 ## ---- pca ----
-pca <- prcomp(dataset[,6:9], center = TRUE, scale. = TRUE)
+pca <- prcomp(dataset[,c(1,6:9)], center = TRUE, scale. = TRUE)
 ggbiplot(pca, obs.scale = 1, var.scale = 1, groups = factor(dataset$diagnosis),
          ellipse = TRUE, circle = FALSE) +
-  ggtitle("PCA of complete dataset") +
+  ggtitle("PCA of different biomarkers") +
   guides(color = guide_legend(title = "Diagnosis")) +
   theme(legend.position = "bottom")
 
@@ -150,7 +159,7 @@ opt.res <- opt.res %>%
   mutate(
     Options = factor(opt.res$Key_Scheme_options,
                      level = unique(opt.res$Key_Scheme_options),
-                     labels = c("-", "0.550", "0.575", "0.600", "0.625", "0.65", "0.675"))
+                     labels = c("-", "0.550", "0.575", "0.600", "0.625", "0.650", "0.675"))
   )
 opt.res$Options <- paste(opt.res$Key_Scheme, paste0("(", opt.res$Options, ")"))
 # Call the wanted results
@@ -164,3 +173,17 @@ pander(x[8:14,2:5], booktabs = T, split.tables = 100,
        caption = paste0("\\label{tab:control}", cap, "(Control vs. PDAC)."))
 pander(x[1:7,2:5], booktabs = T, split.tables = 100,
        caption = paste0("\\label{tab:benign}", cap, "(Benign vs. PDAC)."))
+
+## ---- roc ----
+# Read the ROC files
+roc.control <- read.arff("../data/weka_out/roc_control.arff")
+roc.benign <- read.arff("../data/weka_out/roc_benign.arff")
+
+# Plot FPR against TPR + gradient of Threshold
+ggplot(data = roc.control, aes(`False Positive Rate`, `True Positive Rate`)) +
+  geom_point(aes(colour = Threshold)) +
+  scale_color_gradientn(colors = c('#3f5efb', '#fc466b'), name = "Control-PDAC") +
+  new_scale_color() +
+  geom_point(data = roc.benign, aes(colour = Threshold)) +
+  scale_color_gradientn(colors = c('#22c1c3', '#fdbb2d'), name = "Benign-PDAC") +
+  ggtitle("ROC curves of the two models")

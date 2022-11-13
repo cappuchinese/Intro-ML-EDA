@@ -75,3 +75,38 @@ dataset <- dataset[,-5]
 
 # PCA data
 pca <- prcomp(dataset[,c(1,3,5:8)], center = TRUE, scale. = TRUE)
+
+# Read the weka results
+result <- read_csv("../data/weka_out/base.csv")
+# Make algorithm names readable
+result <- algorithm.names(result)
+# Wanted results
+result <- result %>%
+  group_by(Key_Scheme) %>%
+  summarise_at(vars(Percent_correct, True_positive_rate, False_positive_rate,
+                    Area_under_ROC), list(mean = weighted.mean))
+names(result) <- c("Algorithm", "Accuracy", "Sensitivity", "FPR", "AUROC")
+cap <-  "\\label{tab:weka}Results of the different algorithms from Weka"
+
+# Read the optimization results
+opt.res <- read_csv("../data/weka_out/optimization.csv")
+# Make algorithm names readable
+opt.res <- algorithm.names(opt.res)
+opt.res <- opt.res %>%
+  mutate(
+    Options = factor(opt.res$Key_Scheme_options,
+                     level = unique(opt.res$Key_Scheme_options),
+                     labels = c("-", "0.550", "0.575", "0.600", "0.625", "0.650", "0.675"))
+  )
+opt.res$Options <- paste(opt.res$Key_Scheme, paste0("(", opt.res$Options, ")"))
+# Call the wanted results
+x <- opt.res %>%
+  group_by(Key_Dataset, Options) %>%
+  summarise_at(vars(Percent_correct, True_positive_rate, False_positive_rate),
+               list(mean = weighted.mean))
+names(x) <- c("Dataset", "Algorithm (threshold)", "Accuracy", "TPR", "FPR")
+cap <-  "Results of the ThresholdSelector with different thresholds "
+
+# Read the ROC files
+roc.control <- read.arff("../data/weka_out/roc_control.arff")
+roc.benign <- read.arff("../data/weka_out/roc_benign.arff")
