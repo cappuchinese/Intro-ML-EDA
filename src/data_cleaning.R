@@ -17,7 +17,7 @@
 # Set working directory to this folder
 setwd("../data")
 # Read dataset
-dataset <- read.csv("../data/Data.csv")
+dataset <- read.csv("Data.csv")
 # Change the empty strings to NA
 dataset[dataset == ""] <- NA
 
@@ -59,18 +59,21 @@ set.seed(391)
 train.rows <- sort(sample(seq_len(nrow(dataset)), size = floor(0.7*nrow(dataset))))
 
 training <- dataset[train.rows,]
-test <- dataset[-train.rows,1:7]
+test <- dataset[-train.rows,]
 
 control <- subset(training,
                   training$diagnosis == "Control" | training$diagnosis == "PDAC")
 benign <- subset(training,
                        training$diagnosis == "Benign" | training$diagnosis == "PDAC")
 
+# Set last column of test data to "?"
+test[,8] <- "?"
+
 # Export dataset
 write.csv(dataset, "../data/wekafiles/cleaned_data.csv", row.names = F, quote = F, na="")
 write.csv(control, "../data/wekafiles/control_train.csv", row.names = F, quote = F, na="")
 write.csv(benign, "../data/wekafiles/benign_train.csv", row.names = F, quote = F, na="")
-write.csv(test, "../data/wekafiles/test.csv", row.names = F, quote = F, na="")
+write.arff(test, "../data/wekafiles/test.arff")
 
 # Set working directory back to log folder
 setwd("../log")
