@@ -4,6 +4,7 @@ output:
   pdf_document:
     includes:
       before_body: title.sty
+      in_header: header.sty
     keep_tex : true
     toc: true
     toc_depth: 2
@@ -30,7 +31,7 @@ source("../src/functions.R", local = knitr::knit_global())
 \newpage
 ```{r libraries, warning = FALSE, message = FALSE, include = FALSE}
 #' Load all the packages
-packages <- c("dplyr", "ggplot2", "readr", "ggpubr", "pander", "ggbiplot", "FSA")
+packages <- c("readr", "pander", "dplyr", "FSA", "ggplot2", "ggpubr", "ggbiplot")
 invisible(lapply(packages, library, character.only = T))
 ```
 
@@ -40,9 +41,9 @@ The files are saved as `~/data/Data.csv` and `~/data/Documentation.csv` for easi
 
 The following packages were used:
 
-+ dplyr
 + readr
 + pander
++ dplyr
 + FSA
 + ggplot2
 + ggpubr
