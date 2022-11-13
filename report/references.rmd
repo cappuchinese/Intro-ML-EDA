@@ -1,7 +1,10 @@
 ---
 author: Lisa Hu
 ---
-
+```{r include = FALSE}
+# Copyright (c) 2022 Lisa Hu
+# Licensed under GPLv3. See LICENSE
+```
 1. Public Health England (2021). Cancer survival in ENgland between 2014 and 2018. <https://www.gov.uk/government/statistics/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-until-2019/cancer-survival-in-england-for-patients-diagnosed-between-2014-and-2018-and-followed-up-to-2019> \label{ref:england}
 2. Ballehaninna, U., & Chamberlain, R. (2011). The clinical utility of serum CA 19-9 in the diagnosis, prognosis and management of pancreatic adenocarcinoma: An evidence based appraisal. *Journal Of Gastrointestinal Oncology, 3*(2), 105-119. <doi:10.3978/j.issn.2078-6891.2011.021> \label{ref:ca19}
 3. Thongboonkerd, V. (2007), Recent progress in urinary proteomics. Prot. Clin. Appl., 1: 780-791. <https://doi.org/10.1002/prca.200700035> \label{ref:urine}
